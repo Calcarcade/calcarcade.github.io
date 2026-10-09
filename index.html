@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Five free games for the NumWorks calculator: Redline, Putt Party, BlackJack, Slots and BlockFall.">
+</head>
+<body>
+<title>Calc Arcade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: math-class graph paper. A hero calculator plays every game's real screens;
+   each game gets a full-width row with its own screen viewer and a colour of its own. */
+:root {
+  --paper: #f4f6f1;
+  --grid: #dbe5ee;
+  --grid-major: #c3d3e2;
+  --ink: #1b2129;
+  --ink-soft: #586371;
+  --card: #ffffff;
+  --rule: #d3dbe3;
+  --shadow: #1b2129;
+  --highlight: #ffdf3d;
+  --pen: #c63a2f;
+  --case-hi: #3b414b;
+  --case: #23272e;
+  --case-lo: #15181d;
+  --key: #343a44;
+  --key-hi: #4a515d;
+  --btn-ink: #1b2129;
+  --font-pixel: "Silkscreen", "Courier New", monospace;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #102033; --grid: #172b43; --grid-major: #1f3958; --ink: #eaf0f7; --ink-soft: #9fb1c6;
+    --card: #15283f; --rule: #29425f; --shadow: #050b14; --highlight: #ffd94a; --pen: #ff7d6e; --btn-ink: #1b2129;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #102033; --grid: #172b43; --grid-major: #1f3958; --ink: #eaf0f7; --ink-soft: #9fb1c6;
+  --card: #15283f; --rule: #29425f; --shadow: #050b14; --highlight: #ffd94a; --pen: #ff7d6e; --btn-ink: #1b2129;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--pen); outline-offset: 3px; }
+img { max-width: 100%; }
+
+/* ---------------------------------------------------------------- nav */
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 18px; }
+.brand { font-family: var(--font-pixel); font-weight: 700; font-size: 1.1rem; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+.brand i { width: 14px; height: 14px; background: var(--highlight); border: 2px solid var(--ink); display: inline-block; }
+.nav nav { display: flex; gap: 20px; font-family: var(--font-mono); font-size: 0.85rem; }
+.nav nav a { text-decoration: none; color: var(--ink-soft); }
+.nav nav a:hover { color: var(--ink); }
+
+/* --------------------------------------------------------------- hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 48px; align-items: center; padding-block: 36px 72px; }
+.eyebrow { font-family: var(--font-mono); font-weight: 600; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--pen); }
+h1 { font-family: var(--font-pixel); font-weight: 700; margin: 14px 0 18px; font-size: clamp(3rem, 8.5vw, 6.2rem); line-height: 0.92; letter-spacing: 0.005em; text-wrap: balance; }
+h1 .mark { background: linear-gradient(transparent 58%, var(--highlight) 58%, var(--highlight) 90%, transparent 90%); color: var(--ink); }
+.lede { max-width: 46ch; margin: 0 0 26px; font-size: 1.2rem; }
+.cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px; text-decoration: none;
+  font-family: var(--font-pixel); font-size: 0.95rem; letter-spacing: 0.02em;
+  border: 2px solid var(--ink); background: var(--highlight); color: var(--btn-ink);
+  padding: 12px 18px 11px; cursor: pointer; box-shadow: 4px 4px 0 var(--shadow);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.btn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--shadow); }
+.btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--shadow); }
+.btn.ghost { background: var(--card); color: var(--ink); }
+.btn .arrow { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid currentColor; }
+.btn[aria-busy="true"] { opacity: 0.6; cursor: wait; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 26px; font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.facts b { color: var(--ink); font-weight: 600; }
+
+/* the calculator */
+.calc-stage { display: grid; place-items: center; }
+.calc {
+  width: min(360px, 100%); aspect-ratio: 0.62; max-width: 100%;
+  background: linear-gradient(160deg, var(--case-hi), var(--case) 38%, var(--case-lo));
+  border-radius: 34px 34px 46px 46px; padding: 22px 22px 26px;
+  box-shadow: 10px 12px 0 var(--shadow), inset 0 2px 0 rgba(255,255,255,0.12);
+  border: 2px solid var(--ink);
+  display: flex; flex-direction: column; gap: 18px; transform: rotate(-3deg);
+}
+.calc .lcd { background: #000; border-radius: 10px; padding: 8px; box-shadow: inset 0 0 0 2px #0a0c10, 0 1px 0 rgba(255,255,255,0.08); }
+.calc .lcd-in { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 3px; }
+.calc .lcd-in img { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; opacity: 0; transition: opacity 0.45s ease; }
+.calc .lcd-in img.on { opacity: 1; }
+.calc .lcd-cap { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.68rem; color: #8d97a6; padding: 6px 2px 0; letter-spacing: 0.06em; text-transform: uppercase; }
+.pad { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
+.dpad { width: 96px; height: 96px; position: relative; }
+.dpad span { position: absolute; background: var(--key); border: 2px solid #0d0f13; border-radius: 6px; box-shadow: inset 0 2px 0 var(--key-hi); }
+.dpad .h { left: 0; right: 0; top: 33px; height: 30px; }
+.dpad .v { top: 0; bottom: 0; left: 33px; width: 30px; }
+.dpad .ok { left: 36px; top: 36px; width: 24px; height: 24px; border-radius: 50%; background: var(--highlight); border-color: #0d0f13; box-shadow: none; }
+.keys { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.keys span, .grid-keys span { height: 22px; border-radius: 6px; background: var(--key); border: 2px solid #0d0f13; box-shadow: inset 0 2px 0 var(--key-hi); }
+.grid-keys { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: auto; }
+.grid-keys span:nth-child(5n) { background: #4b5462; }
+
+/* -------------------------------------------------------------- games */
+.section-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; border-bottom: 2px solid var(--ink); padding-bottom: 12px; margin-bottom: 40px; }
+.section-head h2 { font-family: var(--font-pixel); font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 0; line-height: 1; }
+.section-head p { margin: 0; color: var(--ink-soft); font-family: var(--font-mono); font-size: 0.85rem; }
+.games { display: grid; gap: 56px; }
+.game { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.game:nth-child(even) .viewer { order: 2; }
+.viewer { min-width: 0; }
+.bezel {
+  background: var(--case); border: 2px solid var(--ink); padding: 14px; border-radius: 14px;
+  box-shadow: 8px 8px 0 var(--accent);
+}
+.screen { position: relative; aspect-ratio: 4 / 3; max-width: 100%; overflow: hidden; background: #000; border-radius: 4px; }
+.screen img { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; opacity: 0; transition: opacity 0.4s ease; }
+.screen img.on { opacity: 1; }
+.thumbs { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.thumbs button { padding: 0; border: 2px solid var(--rule); background: #000; width: 76px; aspect-ratio: 4 / 3; cursor: pointer; border-radius: 4px; overflow: hidden; max-width: 100%; }
+.thumbs button img { width: 100%; height: 100%; display: block; image-rendering: pixelated; opacity: 0.7; }
+.thumbs button[aria-pressed="true"] { border-color: var(--accent); }
+.thumbs button[aria-pressed="true"] img, .thumbs button:hover img { opacity: 1; }
+.info { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.kicker { font-family: var(--font-mono); font-weight: 600; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); }
+.info h3 { font-family: var(--font-pixel); font-size: clamp(2rem, 4.4vw, 3rem); margin: 0; line-height: 0.95; }
+.info p { margin: 0; max-width: 52ch; }
+.feat { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 18px; }
+.feat li { display: flex; gap: 10px; align-items: baseline; font-size: 0.98rem; }
+.feat li::before { content: ""; width: 8px; height: 8px; flex: none; background: var(--accent); transform: translateY(-1px); }
+.dl-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 6px; }
+.size { font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.g-blackjack { --accent: #1f8a4c; --accent-ink: #1a7a43; }
+.g-slots { --accent: #b3264a; --accent-ink: #b3264a; }
+.g-blockfall { --accent: #4f6ff0; --accent-ink: #3f5fe0; }
+.g-redline { --accent: #f0663a; --accent-ink: #d4542b; }
+.g-putt { --accent: #6cbf3c; --accent-ink: #4a9a22; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .g-blackjack { --accent-ink: #5fd18f; }
+  :root:not([data-theme="light"]) .g-slots { --accent-ink: #ff7d9b; }
+  :root:not([data-theme="light"]) .g-blockfall { --accent-ink: #8ea4ff; }
+  :root:not([data-theme="light"]) .g-redline { --accent-ink: #ff9a72; }
+  :root:not([data-theme="light"]) .g-putt { --accent-ink: #9fe06e; }
+}
+:root[data-theme="dark"] .g-blackjack { --accent-ink: #5fd18f; }
+:root[data-theme="dark"] .g-slots { --accent-ink: #ff7d9b; }
+:root[data-theme="dark"] .g-blockfall { --accent-ink: #8ea4ff; }
+:root[data-theme="dark"] .g-redline { --accent-ink: #ff9a72; }
+:root[data-theme="dark"] .g-putt { --accent-ink: #9fe06e; }
+
+/* ------------------------------------------------------------ install */
+.install { margin-top: 96px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; counter-reset: s; }
+.steps li { counter-increment: s; background: var(--card); border: 2px solid var(--ink); padding: 54px 16px 18px; position: relative; min-width: 0; }
+.steps li::before {
+  content: counter(s); position: absolute; left: 14px; top: 12px; width: 32px; height: 32px; display: grid; place-items: center;
+  font-family: var(--font-pixel); font-size: 1.1rem; background: var(--highlight); color: var(--btn-ink); border: 2px solid var(--ink);
+}
+.steps b { display: block; margin-bottom: 4px; }
+.steps p { margin: 0; font-size: 0.97rem; color: var(--ink); }
+code { font-family: var(--font-mono); font-size: 0.9em; background: var(--paper); border: 1px solid var(--rule); padding: 0 5px; overflow-wrap: anywhere; }
+.copy { font-family: var(--font-mono); font-size: 0.78rem; margin-top: 8px; display: inline-block; background: none; border: 1px solid var(--ink); color: var(--ink); padding: 2px 10px; cursor: pointer; }
+.need { margin-top: 18px; color: var(--ink-soft); font-size: 0.95rem; max-width: 70ch; }
+.notice { border: 2px dashed var(--pen); background: var(--card); padding: 12px 16px; margin-top: 20px; max-width: 70ch; font-size: 0.95rem; }
+.notice strong { color: var(--pen); }
+
+footer { margin-top: 96px; padding-block: 28px 40px; border-top: 2px solid var(--ink); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-soft); }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: var(--paper); font-family: var(--font-mono); font-size: 0.9rem;
+  padding: 10px 16px; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; max-width: calc(100% - 32px);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 40px; padding-block: 16px 56px; }
+  .calc { width: min(300px, 100%); }
+  .game { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .game:nth-child(even) .viewer { order: 0; }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .nav nav { display: none; }
+  .steps { grid-template-columns: minmax(0, 1fr); }
+  .feat { grid-template-columns: minmax(0, 1fr); }
+  .thumbs button { width: 64px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .btn, .screen img, .calc .lcd-in img, .toast { transition: none; }
+}
+</style>
+
+<div class="wrap">
+  <div class="nav">
+    <a class="brand" href="#top" id="top"><i></i>Calc Arcade</a>
+    <nav><a href="#games">Games</a><a href="#install">Install</a></nav>
+  </div>
+
+  <section class="hero">
+    <div>
+      <div class="eyebrow">For the NumWorks calculator</div>
+      <h1>Calc<br><span class="mark">Arcade</span></h1>
+      <p class="lede">Five real games for the calculator you already carry. Cards, slots, a block puzzler, a highway racer and a full golf game. Free to download and on your calculator in about two minutes.</p>
+      <div class="cta">
+        <a class="btn dl" href="games/calc-arcade-all.zip" download data-game="all-games" data-file="calc-arcade-all.zip"><span class="arrow"></span>Download all 5</a>
+        <a class="btn ghost" href="#install">How to install</a>
+      </div>
+      <div class="facts"><span><b>5</b> games</span><span><b>1.2 MB</b> total</span><span>Uses half of the <b>2.5 MB</b> app space</span></div>
+      <div class="notice" id="notice" hidden><strong>Downloads can't start in this view.</strong> Open the link in Chrome, Edge or Safari, or ask whoever sent it to you for the files.</div>
+    </div>
+    <div class="calc-stage" aria-hidden="true">
+      <div class="calc">
+        <div class="lcd">
+          <div class="lcd-in" id="lcd">
+            <img src="img/redline_drive.png" alt="" class="on">
+            <img src="img/bj_win.png" alt="">
+            <img src="img/putt_links.png" alt="">
+            <img src="img/sl_free.png" alt="">
+            <img src="img/bf_play.png" alt="">
+            <img src="img/redline_city.png" alt="">
+            <img src="img/putt_autumn.png" alt="">
+            <img src="img/bj_move.png" alt="">
+          </div>
+          <div class="lcd-cap"><span id="lcd-name">Redline</span><span>320 x 240</span></div>
+        </div>
+        <div class="pad">
+          <div class="keys"><span></span><span></span><span></span><span></span></div>
+          <div class="dpad"><span class="h"></span><span class="v"></span><span class="ok"></span></div>
+          <div class="keys"><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div class="grid-keys"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="games">
+    <div class="section-head"><h2>The games</h2><p>Every screen below is the real game</p></div>
+    <div class="games">
+
+      <article class="game g-redline">
+        <div class="viewer">
+          <div class="bezel"><div class="screen">
+            <img src="img/redline_title.png" alt="Redline title screen" class="on">
+            <img src="img/redline_drive.png" alt="Racing through the desert canyon">
+            <img src="img/redline_city.png" alt="Racing through the city at night with a cop behind">
+            <img src="img/redline_garage.png" alt="Picking a car in the garage">
+          </div></div>
+          <div class="thumbs"></div>
+        </div>
+        <div class="info">
+          <div class="kicker">Racing &middot; 289 KB</div>
+          <h3>Redline</h3>
+          <p>An 80s-style highway racer. Weave through traffic flat out, hit nitro, lose the cops, and drive from the coast through the canyon to the city at night.</p>
+          <ul class="feat"><li>Highway Rush mode</li><li>Checkpoint races</li><li>Free Ride</li><li>A garage of cars</li><li>Nitro boost</li><li>Day to night drive</li></ul>
+          <div class="dl-row"><a class="btn dl" href="games/redline.nwa" download data-game="redline" data-file="redline.nwa"><span class="arrow"></span>Download Redline</a><span class="size">redline.nwa</span></div>
+        </div>
+      </article>
+
+      <article class="game g-putt">
+        <div class="viewer">
+          <div class="bezel"><div class="screen">
+            <img src="img/putt_title.png" alt="Putt Party title screen" class="on">
+            <img src="img/putt_mini.png" alt="A mini golf hole with water hazards">
+            <img src="img/putt_links.png" alt="A desert hole on the long course">
+            <img src="img/putt_autumn.png" alt="An autumn hole lined with trees">
+            <img src="img/putt_range.png" alt="The closest to the pin game at the driving range">
+          </div></div>
+          <div class="thumbs"></div>
+        </div>
+        <div class="info">
+          <div class="kicker">Golf &middot; 398 KB</div>
+          <h3>Putt Party</h3>
+          <p>Two golf games in one. Eighteen holes of mini golf with slopes, bumpers and portals, plus eighteen full-length holes where you pick clubs, set loft and read the wind.</p>
+          <ul class="feat"><li>36 holes</li><li>8 clubs</li><li>Driving range games</li><li>1 to 4 players</li><li>Play against the CPU</li><li>Desert, autumn, seaside</li></ul>
+          <div class="dl-row"><a class="btn dl" href="games/puttparty.nwa" download data-game="puttparty" data-file="puttparty.nwa"><span class="arrow"></span>Download Putt Party</a><span class="size">puttparty.nwa</span></div>
+        </div>
+      </article>
+
+      <article class="game g-blackjack">
+        <div class="viewer">
+          <div class="bezel"><div class="screen">
+            <img src="img/bj_title.png" alt="BlackJack title screen" class="on">
+            <img src="img/bj_move.png" alt="A hand waiting for your move">
+            <img src="img/bj_win.png" alt="The dealer busts and you win">
+          </div></div>
+          <div class="thumbs"></div>
+        </div>
+        <div class="info">
+          <div class="kicker">Cards &middot; 140 KB</div>
+          <h3>BlackJack</h3>
+          <p>A six-deck table where blackjack pays 3 to 2 and the dealer stands on all 17s. Split, double down, take insurance, and ask for a hint when you're stuck.</p>
+          <ul class="feat"><li>Split and double</li><li>Insurance</li><li>Hints on demand</li><li>Chips from $10 to $1K</li><li>Table stats</li><li>Rebuy when you go broke</li></ul>
+          <div class="dl-row"><a class="btn dl" href="games/blackjack.nwa" download data-game="blackjack" data-file="blackjack.nwa"><span class="arrow"></span>Download BlackJack</a><span class="size">blackjack.nwa</span></div>
+        </div>
+      </article>
+
+      <article class="game g-slots">
+        <div class="viewer">
+          <div class="bezel"><div class="screen">
+            <img src="img/sl_title.png" alt="Lucky Strike title screen" class="on">
+            <img src="img/sl_win.png" alt="Reels paying out on a line">
+            <img src="img/sl_free.png" alt="The free spins bonus starting">
+          </div></div>
+          <div class="thumbs"></div>
+        </div>
+        <div class="info">
+          <div class="kicker">Casino &middot; 195 KB</div>
+          <h3>Slots</h3>
+          <p>Lucky Strike, a 7-line slot machine with wilds, scatters and free spins that can retrigger. Win something and you can gamble it on double or nothing.</p>
+          <ul class="feat"><li>7 paylines</li><li>Wilds and scatters</li><li>Free spins bonus</li><li>Gamble feature</li><li>Autoplay</li><li>Full paytable</li></ul>
+          <div class="dl-row"><a class="btn dl" href="games/slots.nwa" download data-game="slots" data-file="slots.nwa"><span class="arrow"></span>Download Slots</a><span class="size">slots.nwa</span></div>
+        </div>
+      </article>
+
+      <article class="game g-blockfall">
+        <div class="viewer">
+          <div class="bezel"><div class="screen">
+            <img src="img/bf_title.png" alt="BlockFall title screen with its game modes" class="on">
+            <img src="img/bf_play.png" alt="A BlockFall game in progress">
+          </div></div>
+          <div class="thumbs"></div>
+        </div>
+        <div class="info">
+          <div class="kicker">Puzzle &middot; 127 KB</div>
+          <h3>BlockFall</h3>
+          <p>The falling-block puzzle, done properly. Hold a piece, see the next five coming, land T-spins and back-to-back clears, and race the clock.</p>
+          <ul class="feat"><li>Marathon</li><li>Sprint 40 lines</li><li>Ultra, 2 minutes</li><li>Hold and next queue</li><li>Ghost piece</li><li>T-spins</li></ul>
+          <div class="dl-row"><a class="btn dl" href="games/blockfall.nwa" download data-game="blockfall" data-file="blockfall.nwa"><span class="arrow"></span>Download BlockFall</a><span class="size">blockfall.nwa</span></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="install" id="install">
+    <div class="section-head"><h2>Install</h2><p>About two minutes</p></div>
+    <ol class="steps">
+      <li><b>Download</b><p>Grab one game or all five. Each game is a single <code>.nwa</code> file. If you took the all-in-one zip, unzip it first.</p></li>
+      <li><b>Open the app page</b><p>In Chrome or Edge on a computer, go to <code id="url">my.numworks.com/apps</code></p><button class="copy" type="button" id="copy">Copy link</button></li>
+      <li><b>Plug in and send</b><p>Connect the calculator with its USB cable, add the <code>.nwa</code> files, and send them to the calculator.</p></li>
+      <li><b>Play</b><p>The games show up on the calculator's home screen. Press Home on the calculator to leave a game.</p></li>
+    </ol>
+    <p class="need">You need the calculator, its USB cable and a computer with Chrome or Edge. Your normal calculator apps and files are not touched. If the calculator is ever reset, the games are removed, so just send them again.</p>
+  </section>
+
+  <footer>
+    <span>Calc Arcade</span>
+    <span>Games for NumWorks calculators. Not made by or affiliated with NumWorks.</span>
+  </footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var toastEl = document.getElementById("toast"), toastT;
+  function toast(msg) { toastEl.textContent = msg; toastEl.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove("show"); }, 2800); }
+
+  /* Downloads. On an ordinary website the buttons are plain links to the files.
+     Inside the claude.ai viewer, page links can't download, so the viewer's save prompt is used instead. */
+  var inViewer = !!(window.claude && typeof window.claude.use === "function");
+  var dlReady = inViewer ? window.claude.use("downloads") : null;
+  if (inViewer) dlReady.then(function (d) { if (!d) document.getElementById("notice").hidden = false; }, function () { document.getElementById("notice").hidden = false; });
+  document.querySelectorAll("a.dl").forEach(function (a) {
+    a.addEventListener("click", function (ev) {
+      if (!inViewer) { toast("Downloading " + a.getAttribute("data-file")); return; }
+      ev.preventDefault();
+      viewerSave(a);
+    });
+  });
+  async function viewerSave(a) {
+    if (a.getAttribute("aria-busy") === "true") return;
+    a.setAttribute("aria-busy", "true");
+    var name = a.getAttribute("data-game");
+    try {
+      var d = await dlReady;
+      if (!d) { document.getElementById("notice").hidden = false; toast("Downloads aren't available here"); return; }
+      var res = await fetch("games/" + name + ".txt");
+      if (!res.ok) throw { code: "missing" };
+      var bin = atob((await res.text()).trim()), bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      await d.save({ filename: (name === "all-games" ? "calc-arcade-all" : name) + ".zip", data: new Blob([bytes], { type: "application/zip" }) });
+      toast("Saved. Unzip it to get the .nwa file.");
+    } catch (e) {
+      var c = e && e.code;
+      if (c === "declined") toast("Download canceled");
+      else if (c === "rate_limited") toast("One download at a time. Try again in a moment.");
+      else if (c === "missing") toast("That file didn't load. Refresh and try again.");
+      else { document.getElementById("notice").hidden = false; toast("Downloads aren't available here"); }
+    } finally { a.removeAttribute("aria-busy"); }
+  }
+
+  document.getElementById("copy").addEventListener("click", function () {
+    var text = "https://my.numworks.com/apps";
+    function sel() { var r = document.createRange(); r.selectNodeContents(document.getElementById("url")); var s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selected. Press Ctrl+C to copy."); }
+    try { navigator.clipboard.writeText(text).then(function () { toast("Copied " + text); }, sel); } catch (e) { sel(); }
+  });
+
+  /* Screen viewers: thumbnails you can click, plus a slow automatic cycle */
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var viewers = [];
+  document.querySelectorAll(".viewer").forEach(function (v) {
+    var imgs = Array.prototype.slice.call(v.querySelectorAll(".screen img")), th = v.querySelector(".thumbs"), cur = 0, held = false;
+    var btns = imgs.map(function (im, k) {
+      var b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", "Show: " + im.alt);
+      var t = document.createElement("img"); t.src = im.getAttribute("src"); t.alt = ""; b.appendChild(t); th.appendChild(b);
+      b.addEventListener("click", function () { held = true; show(k); });
+      return b;
+    });
+    function show(k) { imgs[cur].classList.remove("on"); cur = k; imgs[cur].classList.add("on"); btns.forEach(function (b, i) { b.setAttribute("aria-pressed", i === cur ? "true" : "false"); }); }
+    show(0);
+    viewers.push(function () { if (!held) show((cur + 1) % imgs.length); });
+  });
+  var lcd = Array.prototype.slice.call(document.querySelectorAll("#lcd img")), lc = 0;
+  var NAMES = ["Redline", "BlackJack", "Putt Party", "Slots", "BlockFall", "Redline", "Putt Party", "BlackJack"];
+  if (!reduce) {
+    setInterval(function () { viewers.forEach(function (f) { f(); }); }, 3600);
+    setInterval(function () { lcd[lc].classList.remove("on"); lc = (lc + 1) % lcd.length; lcd[lc].classList.add("on"); document.getElementById("lcd-name").textContent = NAMES[lc]; }, 2400);
+  }
+})();
+</script>
+
+</body>
+</html>
