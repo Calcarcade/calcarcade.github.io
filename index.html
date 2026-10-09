@@ -270,12 +270,35 @@ code { font-family: var(--font-mono); font-size: 0.86em; color: var(--ink); back
 .need h3 { margin: 0 0 6px; font-size: 1.1rem; font-weight: 700; }
 .need p { margin: 0; color: var(--ink-soft); font-size: 0.97rem; max-width: 72ch; }
 
+/* -------------------------------------------------------------- contact */
+.contact { margin-top: 72px; }
+.contact-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.contact-card {
+  display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 22px 22px 20px; border-radius: 22px; text-decoration: none;
+  border: 1px solid var(--line);
+  background: radial-gradient(120% 90% at 0% 0%, var(--accent-glow), transparent 60%), linear-gradient(180deg, var(--surface-2), var(--surface));
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.contact-ico { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 10px; border-radius: 13px; color: var(--accent); background: var(--accent-glow); box-shadow: inset 0 0 0 1px var(--accent-line); }
+.contact-ico svg { width: 22px; height: 22px; }
+.contact-title { font-size: 1.15rem; font-weight: 700; line-height: 1.3; }
+.contact-text { color: var(--ink-soft); font-size: 0.97rem; }
+.contact-go { margin-top: auto; padding-top: 12px; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); }
+.contact-go span { display: inline-block; transition: transform 0.2s ease; }
+.c-bug    { --accent: #ff4f7e; --accent-ink: #ff8dab; --accent-glow: rgba(255, 79, 126, 0.14); --accent-line: rgba(255, 79, 126, 0.45); }
+.c-game   { --accent: #ffcd3c; --accent-ink: #ffdc72; --accent-glow: rgba(255, 205, 60, 0.11); --accent-line: rgba(255, 205, 60, 0.45); }
+.c-update { --accent: #6f8bff; --accent-ink: #a6b6ff; --accent-glow: rgba(111, 139, 255, 0.15); --accent-line: rgba(111, 139, 255, 0.48); }
+.contact-addr { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 18px 0 0; color: var(--ink-soft); font-size: 0.97rem; }
+.contact-addr a { color: var(--ink); font-weight: 500; text-decoration-color: var(--line-strong); text-underline-offset: 3px; overflow-wrap: anywhere; }
+.contact-addr .copy { align-self: center; margin-top: 0; }
+
 /* --------------------------------------------------------------- footer */
 footer { margin-top: 88px; border-top: 1px solid var(--line); }
 footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 28px; padding-block: 28px calc(36px + env(safe-area-inset-bottom, 0px)); }
 footer .brand { font-size: 1.6rem; }
 footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: var(--ink-faint); }
 .totop { font-family: var(--font-mono); font-size: 0.76rem; color: var(--ink-soft); text-decoration: none; padding: 8px 0; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 4px 22px; }
 
 .toast {
   position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 40;
@@ -304,6 +327,9 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
   .game:hover { border-color: var(--accent-line); box-shadow: 0 30px 80px -46px var(--accent); }
   .thumbs button:hover { opacity: 1; transform: translateY(-2px); }
   .copy:hover { background: #262b52; }
+  .contact-card:hover { transform: translateY(-4px); border-color: var(--accent-line); box-shadow: 0 22px 44px -26px var(--accent); }
+  .contact-card:hover .contact-go span { transform: translateX(4px); }
+  .contact-addr a:hover { text-decoration-color: currentColor; }
   .totop:hover { color: var(--ink); }
 }
 
@@ -325,6 +351,12 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
   }
   .lineup::-webkit-scrollbar { display: none; }
   .tile { flex: 0 0 148px; scroll-snap-align: start; }
+  .navlink.wide { display: none; }
+  .contact-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .contact-card { display: grid; grid-template-columns: 48px minmax(0, 1fr); column-gap: 16px; row-gap: 4px; padding: 18px 18px 18px; }
+  .contact-ico { grid-row: 1 / span 3; margin: 0; }
+  .contact-card > :not(.contact-ico) { grid-column: 2; }
+  .contact-go { padding-top: 6px; }
 }
 @media (max-width: 560px) {
   :root { --gutter: 18px; }
@@ -371,6 +403,7 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
     <nav aria-label="Main">
       <a class="navlink" href="#games">Games</a>
       <a class="navlink" href="#install">Install</a>
+      <a class="navlink wide" href="#contact">Feedback</a>
       <a class="btn btn-sm dl" href="games/calc-arcade-all.zip" download data-file="calc-arcade-all.zip"><svg class="ico" viewBox="0 0 9 10" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M3 0h3v4h2v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1v-1h2zM0 9h9v1h-9z"/></svg>Get all 5</a>
     </nav>
   </div>
@@ -576,13 +609,42 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
       <a class="btn dl" href="games/calc-arcade-all.zip" download data-file="calc-arcade-all.zip"><svg class="ico" viewBox="0 0 9 10" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M3 0h3v4h2v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1v-1h2zM0 9h9v1h-9z"/></svg>Download all 5</a>
     </div>
   </section>
+
+  <section class="section contact" id="contact">
+    <div class="section-head">
+      <p class="label">Bugs, ideas, requests</p>
+      <h2>Get in touch</h2>
+      <p class="sub">Found a bug or something that isn't working right? Want a new game, or an update to one of these five? Send an email to <a href="mailto:calcarcade@gmail.com">calcarcade@gmail.com</a>.</p>
+    </div>
+    <ul class="contact-grid">
+      <li class="reveal"><a class="contact-card c-bug" href="mailto:calcarcade@gmail.com?subject=Calc%20Arcade%3A%20bug%20report&amp;body=Which%20game%3A%20%0D%0AWhat%20happened%3A%20%0D%0AWhat%20you%20were%20doing%20when%20it%20happened%3A%20%0D%0A">
+        <span class="contact-ico"><svg viewBox="0 0 10 10" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M2 0h1v1h-1zM7 0h1v1h-1zM3 1h1v1h-1zM6 1h1v1h-1zM3 2h4v1h-4zM2 3h6v6h-6zM0 4h2v1h-2zM8 4h2v1h-2zM0 6h2v1h-2zM8 6h2v1h-2zM1 8h1v1h-1zM8 8h1v1h-1zM3 9h4v1h-4z"/></svg></span>
+        <span class="contact-title">Report a bug</span>
+        <span class="contact-text">Something broken, stuck or looking wrong in one of the games.</span>
+        <span class="contact-go">Email a bug report <span aria-hidden="true">&rarr;</span></span>
+      </a></li>
+      <li class="reveal"><a class="contact-card c-game" href="mailto:calcarcade@gmail.com?subject=Calc%20Arcade%3A%20game%20request&amp;body=Game%20idea%3A%20%0D%0AHow%20it%20would%20play%3A%20%0D%0A">
+        <span class="contact-ico"><svg viewBox="0 0 10 10" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M4 0h2v1h1v2h-1v1h-2v-1h-1v-2h1zM4 4h2v3h-2zM1 7h8v1h1v2h-10v-2h1z"/></svg></span>
+        <span class="contact-title">Request a game</span>
+        <span class="contact-text">A game you'd like to play on the calculator next.</span>
+        <span class="contact-go">Email a request <span aria-hidden="true">&rarr;</span></span>
+      </a></li>
+      <li class="reveal"><a class="contact-card c-update" href="mailto:calcarcade@gmail.com?subject=Calc%20Arcade%3A%20update%20idea&amp;body=Which%20game%3A%20%0D%0AWhat%20you%27d%20like%20added%20or%20changed%3A%20%0D%0A">
+        <span class="contact-ico"><svg viewBox="0 0 9 9" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M4 0h1v3h1v1h3v1h-3v1h-1v3h-1v-3h-1v-1h-3v-1h3v-1h1z"/></svg></span>
+        <span class="contact-title">Suggest an update</span>
+        <span class="contact-text">A new mode, feature or fix for Redline, Putt Party, BlackJack, Slots or BlockFall.</span>
+        <span class="contact-go">Email an idea <span aria-hidden="true">&rarr;</span></span>
+      </a></li>
+    </ul>
+    <p class="contact-addr">Or copy the address: <a href="mailto:calcarcade@gmail.com" id="email">calcarcade@gmail.com</a><button class="copy" type="button" id="copy-email">Copy email</button></p>
+  </section>
 </main>
 
 <footer>
   <div class="wrap">
     <a class="brand" href="#top" aria-label="Calc Arcade, back to top"><svg viewBox="0 0 20 28" aria-hidden="true"><rect x=".5" y=".5" width="19" height="27" rx="4" fill="#f6f6f3"/><rect x="3" y="3" width="14" height="10" rx="1.5" fill="#0a0b18"/><rect x="5" y="8" width="3" height="3" fill="#ffcd3c"/><rect x="9" y="5" width="2" height="6" fill="#ff4f7e"/><rect x="12" y="7" width="3" height="4" fill="#6f8bff"/><circle cx="6.5" cy="18" r="2.8" fill="#cfcfca"/><rect x="11" y="15.5" width="5.5" height="2.6" rx="1.3" fill="#f5b335"/><rect x="11" y="19" width="5.5" height="2.6" rx="1.3" fill="#26282c"/><rect x="3" y="23.5" width="3.4" height="2" rx="1" fill="#cfcfca"/><rect x="8.3" y="23.5" width="3.4" height="2" rx="1" fill="#cfcfca"/><rect x="13.6" y="23.5" width="3.4" height="2" rx="1" fill="#cfcfca"/></svg>Calc Arcade</a>
     <p>Games for NumWorks calculators. Not made by or affiliated with NumWorks.</p>
-    <a class="totop" href="#top">Back to top &uarr;</a>
+    <div class="foot-links"><a class="totop" href="#contact">Found a bug? Get in touch</a><a class="totop" href="#top">Back to top &uarr;</a></div>
   </div>
 </footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -611,11 +673,15 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
     a.addEventListener("click", function () { toast("Downloading " + a.getAttribute("data-file")); });
   });
 
-  document.getElementById("copy").addEventListener("click", function () {
-    var text = "https://my.numworks.com/apps";
-    function sel() { var r = document.createRange(); r.selectNodeContents(document.getElementById("url")); var s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selected. Press Ctrl+C to copy."); }
-    try { navigator.clipboard.writeText(text).then(function () { toast("Copied " + text); }, sel); } catch (e) { sel(); }
-  });
+  /* Copy buttons: clipboard where allowed, otherwise select the text so it can be copied by hand */
+  function copyButton(btnId, textId, text) {
+    document.getElementById(btnId).addEventListener("click", function () {
+      function sel() { var r = document.createRange(); r.selectNodeContents(document.getElementById(textId)); var s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selected. Copy it from there."); }
+      try { navigator.clipboard.writeText(text).then(function () { toast("Copied " + text); }, sel); } catch (e) { sel(); }
+    });
+  }
+  copyButton("copy", "url", "https://my.numworks.com/apps");
+  copyButton("copy-email", "email", "calcarcade@gmail.com");
 
   /* Screen viewers: thumbnails you can tap, plus a slow automatic cycle while the card is on screen */
   var viewers = [];
