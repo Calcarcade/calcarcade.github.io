@@ -12,6 +12,7 @@
 <meta property="og:image" content="https://calcarcade.github.io/img/redline_title.png">
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 0 28 28'%3E%3Crect x='.5' y='.5' width='19' height='27' rx='4' fill='%23f6f6f3'/%3E%3Crect x='3' y='3' width='14' height='10' rx='1.5' fill='%230a0b18'/%3E%3Crect x='5' y='8' width='3' height='3' fill='%23ffcd3c'/%3E%3Crect x='9' y='5' width='2' height='6' fill='%23ff4f7e'/%3E%3Crect x='12' y='7' width='3' height='4' fill='%236f8bff'/%3E%3Ccircle cx='6.5' cy='18' r='2.8' fill='%23cfcfca'/%3E%3Crect x='11' y='15.5' width='5.5' height='2.6' rx='1.3' fill='%23f5b335'/%3E%3Crect x='11' y='19' width='5.5' height='2.6' rx='1.3' fill='%2326282c'/%3E%3Crect x='3' y='23.5' width='3.4' height='2' rx='1' fill='%23cfcfca'/%3E%3Crect x='8.3' y='23.5' width='3.4' height='2' rx='1' fill='%23cfcfca'/%3E%3Crect x='13.6' y='23.5' width='3.4' height='2' rx='1' fill='%23cfcfca'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=JetBrains+Mono:wght@500;600&family=Space+Grotesk:wght@400;500;700&display=swap">
@@ -35,14 +36,16 @@
   --key: #1f2343;
   --key-edge: #0b0d1d;
   --key-ink: #12131d;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
   --font-display: "Jersey 10", "Silkscreen", ui-monospace, monospace;
   --font-body: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
   --gutter: 20px;
+  --section-gap: 112px;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scrollbar-color: #2b3060 var(--bg); }
 body {
   margin: 0;
   background-color: var(--bg);
@@ -59,25 +62,40 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
+/* a faint film grain over the page background (behind every card) */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+::selection { background: var(--yellow); color: var(--key-ink); }
 .wrap { max-width: 1160px; margin: 0 auto; padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right)); }
 a { color: inherit; }
 img { max-width: 100%; }
 :focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; border-radius: 6px; }
 [id] { scroll-margin-top: 76px; }
 p { text-wrap: pretty; }
+.skip { position: absolute; left: 12px; top: -60px; z-index: 50; padding: 10px 14px; border-radius: 10px; background: var(--yellow); color: var(--key-ink); font-weight: 700; text-decoration: none; transition: top 0.15s ease; }
+.skip:focus { top: 12px; }
 
 /* ------------------------------------------------------------- top bar */
+/* Solid by default; clear over the hero once the script knows the page is at the top. */
 .topbar {
   position: sticky; top: 0; z-index: 30;
-  background: rgba(10, 11, 24, 0.74);
+  background: rgba(10, 11, 24, 0.78);
   -webkit-backdrop-filter: saturate(150%) blur(14px); backdrop-filter: saturate(150%) blur(14px);
   border-bottom: 1px solid var(--line);
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
+.js .topbar.at-top { background: transparent; border-bottom-color: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.topbar:not(.at-top) { box-shadow: 0 12px 32px -22px rgba(0, 0, 0, 0.9); }
 .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--font-display); font-size: 1.85rem; line-height: 1; letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap; }
 .brand svg { width: 18px; height: 25px; flex: none; transition: transform 0.25s ease; }
 .topbar nav { display: flex; align-items: center; gap: 4px; }
-.navlink { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); text-decoration: none; padding: 10px 12px; border-radius: 10px; transition: color 0.15s ease, background-color 0.15s ease; }
+.navlink { position: relative; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); text-decoration: none; padding: 10px 12px; border-radius: 10px; transition: color 0.15s ease, background-color 0.15s ease; }
+.navlink::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 5px; height: 2px; border-radius: 2px; background: var(--yellow); transform: scaleX(0); transition: transform 0.25s var(--ease-out); }
+.navlink[aria-current="true"] { color: var(--ink); }
+.navlink[aria-current="true"]::after { transform: scaleX(1); }
 .btn.btn-sm { min-height: 40px; padding: 0 14px; font-size: 1.3rem; border-radius: 10px; margin-left: 8px; gap: 9px; box-shadow: 0 3px 0 var(--b-edge); }
 
 /* -------------------------------------------------------------- buttons */
@@ -98,7 +116,14 @@ p { text-wrap: pretty; }
 .btn-ghost:active { box-shadow: 0 1px 0 var(--b-edge), inset 0 0 0 1px var(--line-strong); }
 
 /* ----------------------------------------------------------------- hero */
-.hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 48px; align-items: center; padding-block: 64px 96px; }
+.hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 48px; align-items: center; padding-block: 56px 88px; }
+.hero-copy > * { animation: rise 0.8s var(--ease-out) both; }
+.hero-copy > :nth-child(2) { animation-delay: 0.06s; }
+.hero-copy > :nth-child(3) { animation-delay: 0.12s; }
+.hero-copy > :nth-child(4) { animation-delay: 0.18s; }
+.hero-copy > :nth-child(5) { animation-delay: 0.22s; }
+.hero-copy > :nth-child(6) { animation-delay: 0.26s; }
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 .eyebrow {
   display: inline-flex; align-items: center; gap: 10px; margin: 0;
   font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
@@ -111,21 +136,35 @@ h1 { font-family: var(--font-display); font-weight: 400; text-transform: upperca
 h1 span { display: block; }
 h1 .hl { color: var(--yellow); text-shadow: 0.04em 0.04em 0 var(--pink); }
 .lede { max-width: 44ch; margin: 0 0 32px; font-size: clamp(1.06rem, 1rem + 0.35vw, 1.22rem); color: var(--ink-soft); }
+.lede strong { color: var(--ink); font-weight: 500; }
 .cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
 .cta-note { margin: 16px 0 0; font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-faint); }
-.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; max-width: 460px; margin: 34px 0 0; }
-.stat { display: flex; flex-direction: column-reverse; gap: 4px; padding: 12px 14px; border-radius: 14px; background: rgba(255, 255, 255, 0.025); border: 1px solid var(--line); }
+.stats { display: inline-grid; grid-template-columns: repeat(3, auto); margin: 34px 0 0; border: 1px solid var(--line); border-radius: 16px; background: rgba(255, 255, 255, 0.025); }
+.stat { display: flex; flex-direction: column-reverse; gap: 5px; padding: 13px 24px 14px; }
+.stat + .stat { border-left: 1px solid var(--line); }
 .stat dt { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
 .stat dd { margin: 0; font-family: var(--font-display); font-size: 2.1rem; line-height: 0.9; }
 
-/* the calculator: white body, black screen, round arrow pad, home and power keys, rows of pill keys */
-.calc-stage { position: relative; display: grid; place-items: center; }
+/* the stage: a glow, an 80s grid floor and a soft shadow under the floating calculator */
+.calc-stage { position: relative; isolation: isolate; display: grid; place-items: center; padding-bottom: 72px; animation: rise 1s 0.12s var(--ease-out) both; }
 .calc-stage::before {
-  content: ""; position: absolute; inset: 4% 0; z-index: 0; pointer-events: none;
+  content: ""; position: absolute; inset: 0 0 10%; z-index: -2; pointer-events: none;
   background: radial-gradient(closest-side, rgba(255, 205, 60, 0.20), rgba(107, 92, 255, 0.16) 55%, transparent 100%);
 }
-.calc-float { position: relative; z-index: 1; width: min(330px, 100%); animation: float 7s ease-in-out infinite; }
+.floor {
+  position: absolute; left: 0; right: 0; bottom: -6px; height: 220px; z-index: -1; pointer-events: none;
+  background-image: linear-gradient(rgba(255, 205, 60, 0.75) 2px, transparent 2px), linear-gradient(90deg, rgba(255, 205, 60, 0.6) 1px, transparent 1px);
+  background-size: 40px 30px, 40px 30px; background-position: center bottom;
+  transform: perspective(260px) rotateX(56deg); transform-origin: 50% 100%;
+  -webkit-mask-image: radial-gradient(ellipse 66% 100% at 50% 100%, #000 30%, transparent 82%); mask-image: radial-gradient(ellipse 66% 100% at 50% 100%, #000 30%, transparent 82%);
+  opacity: 0.42;
+}
+.calc-shadow { position: absolute; left: 50%; bottom: 52px; width: 62%; height: 34px; z-index: -1; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(0, 0, 0, 0.75), transparent); animation: shadow 7s ease-in-out infinite; }
+@keyframes shadow { 0%, 100% { transform: translateX(-50%) scale(1); opacity: 1; } 50% { transform: translateX(-50%) scale(0.86); opacity: 0.7; } }
+.calc-float { position: relative; width: min(330px, 100%); animation: float 7s ease-in-out infinite; }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+/* the calculator: white body, black screen, round arrow pad, home and power keys, rows of pill keys */
 .calc {
   --body: #f6f6f3; --body-lo: #e3e3de; --key-face: #ffffff; --key-edge: #c9cac6; --key-ink: #3d4148; --key-sub: #e8a33a; --home: #f5b335;
   width: min(330px, 100%); max-width: 100%;
@@ -172,13 +211,25 @@ h1 .hl { color: var(--yellow); text-shadow: 0.04em 0.04em 0 var(--pink); }
 .nkeys .k { height: 25px; border-radius: 12px; font-size: 0.78rem; font-weight: 700; }
 .k sup { font-size: 0.42rem; vertical-align: super; margin-left: 1px; line-height: 0; }
 
+/* --------------------------------------------------------- marquee band */
+.marquee {
+  overflow: hidden; border-block: 1px solid var(--line); background: rgba(255, 255, 255, 0.02); padding-block: 15px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.marquee-track { display: flex; width: max-content; animation: marquee 70s linear infinite; }
+.mq { display: inline-flex; align-items: center; gap: 24px; padding-right: 24px; font-family: var(--font-display); font-size: 2.1rem; line-height: 1; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink-faint); white-space: nowrap; }
+.mq::before { content: ""; width: 9px; height: 9px; flex: none; transform: rotate(45deg); background: var(--accent, var(--yellow)); box-shadow: 0 0 12px var(--accent, var(--yellow)); }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
 /* ------------------------------------------------------------- sections */
-.section { padding-block: 24px 40px; }
+.section { padding-top: var(--section-gap); }
 .section-head { display: grid; gap: 12px; margin-bottom: 36px; }
-.label { display: flex; align-items: center; gap: 10px; margin: 0; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--yellow); }
-.label::before { content: ""; width: 20px; height: 2px; background: currentColor; }
+.label { display: flex; align-items: center; gap: 12px; margin: 0; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--yellow); }
+.label::before { content: ""; width: 22px; height: 2px; background: currentColor; }
+.label .idx { order: -1; color: var(--ink-faint); }
 h2 { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(3.4rem, 2.2rem + 4vw, 5.25rem); line-height: 0.82; letter-spacing: 0.01em; margin: 0; }
 .sub { margin: 0; color: var(--ink-soft); max-width: 60ch; }
+.sub a { color: var(--ink); font-weight: 500; text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
 
 /* game select: one tile per game that jumps to its card */
 .lineup { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin: 0 0 44px; }
@@ -189,7 +240,7 @@ h2 { font-family: var(--font-display); font-weight: 400; text-transform: upperca
 }
 .tile-screen { display: block; aspect-ratio: 4 / 3; border-radius: 9px; overflow: hidden; background: #000; margin-bottom: 4px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6); }
 .tile-screen img { display: block; width: 100%; height: 100%; image-rendering: pixelated; transition: transform 0.35s ease; }
-.tile-name { font-family: var(--font-display); font-size: 1.65rem; line-height: 0.9; text-transform: uppercase; padding-inline: 4px; }
+.tile-name { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-family: var(--font-display); font-size: 1.65rem; line-height: 0.9; text-transform: uppercase; padding-inline: 4px; }
 .tile-genre { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); padding-inline: 4px; }
 
 /* game cards */
@@ -200,6 +251,7 @@ h2 { font-family: var(--font-display); font-weight: 400; text-transform: upperca
   background:
     radial-gradient(110% 80% at 0% 0%, var(--accent-glow), transparent 60%),
     linear-gradient(180deg, var(--surface-2), var(--surface));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 .game:nth-child(even) { background: radial-gradient(110% 80% at 100% 0%, var(--accent-glow), transparent 60%), linear-gradient(180deg, var(--surface-2), var(--surface)); }
@@ -209,7 +261,12 @@ h2 { font-family: var(--font-display); font-weight: 400; text-transform: upperca
 .screen { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #000; border-radius: 7px; }
 .screen img { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; opacity: 0; transition: opacity 0.45s ease; }
 .screen img.on { opacity: 1; }
-.screen-bar { display: flex; align-items: center; gap: 10px; padding: 9px 4px 10px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-faint); letter-spacing: 0.02em; }
+/* time until the next screen; it only runs while the card is on screen */
+.progress { height: 2px; margin: 8px 2px 0; border-radius: 2px; overflow: hidden; background: rgba(255, 255, 255, 0.06); }
+.progress::after { content: ""; display: block; height: 100%; background: var(--accent); transform: scaleX(0); transform-origin: left; }
+.progress.run::after { animation: fill var(--dwell, 4s) linear forwards; }
+@keyframes fill { to { transform: scaleX(1); } }
+.screen-bar { display: flex; align-items: center; gap: 10px; padding: 8px 4px 10px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-faint); letter-spacing: 0.02em; }
 .led { width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
 .cap { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .count { flex: none; font-variant-numeric: tabular-nums; }
@@ -224,6 +281,7 @@ h2 { font-family: var(--font-display); font-weight: 400; text-transform: upperca
 .info { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
 .kicker { display: flex; align-items: center; gap: 10px; margin: 0; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
 .kicker::before { content: ""; width: 9px; height: 9px; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+.kicker .num { margin-left: auto; color: var(--ink-faint); font-weight: 500; letter-spacing: 0.1em; }
 .game-title { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(3.4rem, 2.4rem + 3.4vw, 4.75rem); line-height: 0.8; letter-spacing: 0.01em; margin: 0; }
 .desc { margin: 0; color: var(--ink-soft); max-width: 50ch; }
 .feat { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
@@ -240,12 +298,11 @@ h2 { font-family: var(--font-display); font-weight: 400; text-transform: upperca
 .g-blockfall { --accent: #6f8bff; --accent-edge: #3d52c4; --accent-ink: #a6b6ff; --accent-glow: rgba(111, 139, 255, 0.15); --accent-line: rgba(111, 139, 255, 0.48); }
 
 /* -------------------------------------------------------------- install */
-.install { margin-top: 72px; }
 .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; counter-reset: s; }
 .steps li {
-  counter-increment: s; min-width: 0; display: flex; flex-direction: column; gap: 6px;
+  counter-increment: s; position: relative; min-width: 0; display: flex; flex-direction: column; gap: 6px;
   padding: 22px 20px 24px; border-radius: 22px; border: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  background: linear-gradient(180deg, var(--surface-2), var(--surface)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 .steps li::before {
   content: counter(s); flex: none; display: grid; place-items: center; width: 46px; height: 42px; margin-bottom: 12px; padding-top: 2px;
@@ -259,7 +316,7 @@ code { font-family: var(--font-mono); font-size: 0.86em; color: var(--ink); back
   align-self: flex-start; margin-top: 8px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 10px; cursor: pointer;
   font-family: var(--font-mono); font-size: 0.76rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--ink); background: var(--key); box-shadow: 0 3px 0 var(--key-edge), inset 0 0 0 1px var(--line-strong);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.15s ease;
 }
 .copy:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--key-edge), inset 0 0 0 1px var(--line-strong); }
 .need {
@@ -271,12 +328,12 @@ code { font-family: var(--font-mono); font-size: 0.86em; color: var(--ink); back
 .need p { margin: 0; color: var(--ink-soft); font-size: 0.97rem; max-width: 72ch; }
 
 /* -------------------------------------------------------------- contact */
-.contact { margin-top: 72px; }
 .contact-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .contact-card {
   display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 22px 22px 20px; border-radius: 22px; text-decoration: none;
   border: 1px solid var(--line);
   background: radial-gradient(120% 90% at 0% 0%, var(--accent-glow), transparent 60%), linear-gradient(180deg, var(--surface-2), var(--surface));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .contact-ico { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 10px; border-radius: 13px; color: var(--accent); background: var(--accent-glow); box-shadow: inset 0 0 0 1px var(--accent-line); }
@@ -293,12 +350,18 @@ code { font-family: var(--font-mono); font-size: 0.86em; color: var(--ink); back
 .contact-addr .copy { align-self: center; margin-top: 0; }
 
 /* --------------------------------------------------------------- footer */
-footer { margin-top: 88px; border-top: 1px solid var(--line); }
-footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 28px; padding-block: 28px calc(36px + env(safe-area-inset-bottom, 0px)); }
-footer .brand { font-size: 1.6rem; }
-footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: var(--ink-faint); }
-.totop { font-family: var(--font-mono); font-size: 0.76rem; color: var(--ink-soft); text-decoration: none; padding: 8px 0; }
-.foot-links { display: flex; flex-wrap: wrap; gap: 4px 22px; }
+footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 70%); }
+.foot-top { display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(0, 1fr)); gap: 40px; padding-block: 56px 44px; }
+.foot-brand .brand { font-size: 2rem; }
+.foot-brand p { margin: 14px 0 22px; max-width: 34ch; color: var(--ink-soft); font-size: 0.97rem; }
+.foot-brand .btn { min-height: 48px; font-size: 1.45rem; }
+.foot-h { margin: 6px 0 16px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint); }
+.foot-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.foot-col a { display: inline-flex; align-items: center; gap: 10px; color: var(--ink-soft); text-decoration: none; font-size: 0.97rem; padding-block: 2px; transition: color 0.15s ease; }
+.foot-col .dot { width: 8px; height: 8px; flex: none; background: var(--accent); }
+.foot-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; padding-block: 22px calc(30px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); }
+.foot-bottom p { margin: 0; font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-faint); }
+.totop { font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-soft); text-decoration: none; padding: 8px 0; }
 
 .toast {
   position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 40;
@@ -310,7 +373,7 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* reveal on scroll, only when the script is running */
-.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease; }
+.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s var(--ease-out), border-color 0.3s ease, box-shadow 0.3s ease; }
 .js .reveal.in { opacity: 1; transform: none; }
 
 /* hover only where there is a real pointer, so taps on phones don't leave things stuck */
@@ -322,26 +385,37 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
   .btn.btn-sm:hover { box-shadow: 0 5px 0 var(--b-edge); }
   .btn:active, .btn:hover:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--b-edge); }
   .btn-ghost:hover:active { box-shadow: 0 1px 0 var(--b-edge), inset 0 0 0 1px var(--line-strong); }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
   .tile:hover { transform: translateY(-4px); border-color: var(--accent-line); box-shadow: 0 22px 40px -22px var(--accent); }
   .tile:hover .tile-screen img { transform: scale(1.04); }
-  .game:hover { border-color: var(--accent-line); box-shadow: 0 30px 80px -46px var(--accent); }
+  .tile-name::after { content: "\2193"; font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-ink); opacity: 0; transform: translateY(-4px); transition: opacity 0.2s ease, transform 0.2s ease; }
+  .tile:hover .tile-name::after { opacity: 1; transform: none; }
+  .game:hover { border-color: var(--accent-line); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 30px 80px -46px var(--accent); }
   .thumbs button:hover { opacity: 1; transform: translateY(-2px); }
   .copy:hover { background: #262b52; }
   .contact-card:hover { transform: translateY(-4px); border-color: var(--accent-line); box-shadow: 0 22px 44px -26px var(--accent); }
   .contact-card:hover .contact-go span { transform: translateX(4px); }
-  .contact-addr a:hover { text-decoration-color: currentColor; }
-  .totop:hover { color: var(--ink); }
+  .sub a:hover, .contact-addr a:hover { text-decoration-color: currentColor; }
+  .foot-col a:hover, .totop:hover { color: var(--ink); }
 }
 
 /* ------------------------------------------------------------ responsive */
+@media (min-width: 961px) {
+  /* dashed track joining the four install steps */
+  .steps li:not(:last-child)::after { content: ""; position: absolute; top: 43px; left: 78px; right: -17px; border-top: 2px dashed var(--line-strong); }
+}
 @media (max-width: 960px) {
-  .hero { grid-template-columns: minmax(0, 1fr); gap: 48px; padding-block: 40px 72px; }
+  :root { --section-gap: 96px; }
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 40px; padding-block: 40px 72px; }
   .calc-float { width: min(300px, 100%); }
   .calc { width: min(300px, 100%); }
+  .calc-stage { max-width: 460px; width: 100%; justify-self: center; }
   .dpad { width: 70px; height: 70px; } .dpad .u, .dpad .d { left: 30px; } .dpad .l, .dpad .r { top: 30px; }
   .game { grid-template-columns: minmax(0, 1fr); gap: 26px; padding: 18px; }
   .game:nth-child(even) .viewer { order: 0; }
   .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .foot-top { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px 24px; }
+  .foot-brand { grid-column: 1 / -1; }
 }
 @media (max-width: 720px) {
   .lineup {
@@ -352,6 +426,7 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
   .lineup::-webkit-scrollbar { display: none; }
   .tile { flex: 0 0 148px; scroll-snap-align: start; }
   .navlink.wide { display: none; }
+  .mq { font-size: 1.8rem; gap: 20px; padding-right: 20px; }
   .contact-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
   .contact-card { display: grid; grid-template-columns: 48px minmax(0, 1fr); column-gap: 16px; row-gap: 4px; padding: 18px 18px 18px; }
   .contact-ico { grid-row: 1 / span 3; margin: 0; }
@@ -359,15 +434,16 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
   .contact-go { padding-top: 6px; }
 }
 @media (max-width: 560px) {
-  :root { --gutter: 18px; }
+  :root { --gutter: 18px; --section-gap: 80px; }
   body { font-size: 1rem; }
   .btn-sm { display: none !important; }
   .navlink { padding: 10px 9px; }
-  .hero { padding-block: 32px 64px; gap: 44px; }
+  .navlink::after { left: 9px; right: 9px; }
+  .hero { padding-block: 32px 60px; gap: 36px; }
   h1 { margin: 22px 0 20px; }
   .cta .btn { flex: 1 1 100%; }
-  .stats { gap: 8px; }
-  .stat { padding: 10px 12px; }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
+  .stat { padding: 11px 14px 12px; }
   .stat dd { font-size: 1.85rem; }
   .section-head { margin-bottom: 26px; }
   .game { padding: 12px 12px 20px; border-radius: 22px; gap: 22px; }
@@ -382,19 +458,22 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
   .steps li > * { grid-column: 2; }
   .need { padding: 20px; }
   .need .btn { flex: 1 1 100%; }
-  footer .wrap { flex-direction: column; align-items: flex-start; }
+  .foot-top { padding-block: 44px 36px; }
+  .foot-brand .btn { width: 100%; }
+  .foot-bottom { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .calc-float, .cursor { animation: none; }
+  .hero-copy > *, .calc-stage, .calc-float, .calc-shadow, .cursor, .marquee-track { animation: none; }
   .js .reveal { opacity: 1; transform: none; }
   *, *::before, *::after { transition-duration: 0.01ms !important; }
 }
 </style>
 </head>
 <body>
+<a class="skip" href="#games">Skip to the games</a>
 
-<header class="topbar">
+<header class="topbar at-top" id="topbar">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="Calc Arcade, back to top">
       <svg viewBox="0 0 20 28" aria-hidden="true"><rect x=".5" y=".5" width="19" height="27" rx="4" fill="#f6f6f3"/><rect x="3" y="3" width="14" height="10" rx="1.5" fill="#0a0b18"/><rect x="5" y="8" width="3" height="3" fill="#ffcd3c"/><rect x="9" y="5" width="2" height="6" fill="#ff4f7e"/><rect x="12" y="7" width="3" height="4" fill="#6f8bff"/><circle cx="6.5" cy="18" r="2.8" fill="#cfcfca"/><rect x="11" y="15.5" width="5.5" height="2.6" rx="1.3" fill="#f5b335"/><rect x="11" y="19" width="5.5" height="2.6" rx="1.3" fill="#26282c"/><rect x="3" y="23.5" width="3.4" height="2" rx="1" fill="#cfcfca"/><rect x="8.3" y="23.5" width="3.4" height="2" rx="1" fill="#cfcfca"/><rect x="13.6" y="23.5" width="3.4" height="2" rx="1" fill="#cfcfca"/></svg>
@@ -409,12 +488,12 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
   </div>
 </header>
 
-<main class="wrap" id="top">
-  <section class="hero">
-    <div>
+<main id="top">
+  <section class="hero wrap" id="home">
+    <div class="hero-copy">
       <p class="eyebrow">For the NumWorks calculator<span class="cursor" aria-hidden="true"></span></p>
       <h1><span>Calc</span><span class="hl">Arcade</span></h1>
-      <p class="lede">Five real games for the calculator you already carry. Cards, slots, a block puzzler, a highway racer and a full golf game. Free to download and on your calculator in about two minutes.</p>
+      <p class="lede"><strong>Five real games for the calculator you already carry.</strong> Cards, slots, a block puzzler, a highway racer and a full golf game. Free to download and on your calculator in about two minutes.</p>
       <div class="cta">
         <a class="btn dl" href="games/calc-arcade-all.zip" download data-file="calc-arcade-all.zip"><svg class="ico" viewBox="0 0 9 10" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M3 0h3v4h2v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1v-1h2zM0 9h9v1h-9z"/></svg>Download all 5</a>
         <a class="btn btn-ghost" href="#install">How to install</a>
@@ -427,6 +506,8 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
       </dl>
     </div>
     <div class="calc-stage" aria-hidden="true">
+      <div class="floor"></div>
+      <div class="calc-shadow"></div>
       <div class="calc-float">
       <div class="calc">
         <div class="lcd">
@@ -463,9 +544,18 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
     </div>
   </section>
 
-  <section class="section" id="games">
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span class="mq g-redline">Redline</span><span class="mq g-putt">Putt Party</span><span class="mq g-blackjack">BlackJack</span><span class="mq g-slots">Slots</span><span class="mq g-blockfall">BlockFall</span><span class="mq">Free to download</span><span class="mq">Made for NumWorks</span>
+      <span class="mq g-redline">Redline</span><span class="mq g-putt">Putt Party</span><span class="mq g-blackjack">BlackJack</span><span class="mq g-slots">Slots</span><span class="mq g-blockfall">BlockFall</span><span class="mq">Free to download</span><span class="mq">Made for NumWorks</span>
+      <span class="mq g-redline">Redline</span><span class="mq g-putt">Putt Party</span><span class="mq g-blackjack">BlackJack</span><span class="mq g-slots">Slots</span><span class="mq g-blockfall">BlockFall</span><span class="mq">Free to download</span><span class="mq">Made for NumWorks</span>
+      <span class="mq g-redline">Redline</span><span class="mq g-putt">Putt Party</span><span class="mq g-blackjack">BlackJack</span><span class="mq g-slots">Slots</span><span class="mq g-blockfall">BlockFall</span><span class="mq">Free to download</span><span class="mq">Made for NumWorks</span>
+    </div>
+  </div>
+
+  <section class="section wrap" id="games">
     <div class="section-head">
-      <p class="label">Select game</p>
+      <p class="label"><span class="idx">01</span>Select game</p>
       <h2>The games</h2>
       <p class="sub">Every screen below is the real game.</p>
     </div>
@@ -489,12 +579,13 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
               <img src="img/redline_city.png" alt="Racing through the city at night with a cop behind" loading="lazy">
               <img src="img/redline_garage.png" alt="Picking a car in the garage" loading="lazy">
             </div>
+            <div class="progress" aria-hidden="true"></div>
             <div class="screen-bar" aria-hidden="true"><span class="led"></span><span class="cap"></span><span class="count"></span></div>
           </div>
           <div class="thumbs" role="group" aria-label="Redline screenshots"></div>
         </div>
         <div class="info">
-          <p class="kicker">Racing</p>
+          <p class="kicker">Racing<span class="num">01 / 05</span></p>
           <h3 class="game-title">Redline</h3>
           <p class="desc">An 80s-style highway racer. Weave through traffic flat out, hit nitro, lose the cops, and drive from the coast through the canyon to the city at night.</p>
           <ul class="feat"><li>Highway Rush mode</li><li>Checkpoint races</li><li>Free Ride</li><li>A garage of cars</li><li>Nitro boost</li><li>Day to night drive</li></ul>
@@ -512,12 +603,13 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
               <img src="img/putt_autumn.png" alt="An autumn hole lined with trees" loading="lazy">
               <img src="img/putt_range.png" alt="The closest to the pin game at the driving range" loading="lazy">
             </div>
+            <div class="progress" aria-hidden="true"></div>
             <div class="screen-bar" aria-hidden="true"><span class="led"></span><span class="cap"></span><span class="count"></span></div>
           </div>
           <div class="thumbs" role="group" aria-label="Putt Party screenshots"></div>
         </div>
         <div class="info">
-          <p class="kicker">Golf</p>
+          <p class="kicker">Golf<span class="num">02 / 05</span></p>
           <h3 class="game-title">Putt Party</h3>
           <p class="desc">Two golf games in one. Eighteen holes of mini golf with slopes, bumpers and portals, plus eighteen full-length holes where you pick clubs, set loft and read the wind.</p>
           <ul class="feat"><li>36 holes</li><li>8 clubs</li><li>Driving range games</li><li>1 to 4 players</li><li>Play against the CPU</li><li>Desert, autumn, seaside</li></ul>
@@ -533,12 +625,13 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
               <img src="img/bj_move.png" alt="A hand waiting for your move" loading="lazy">
               <img src="img/bj_win.png" alt="The dealer busts and you win" loading="lazy">
             </div>
+            <div class="progress" aria-hidden="true"></div>
             <div class="screen-bar" aria-hidden="true"><span class="led"></span><span class="cap"></span><span class="count"></span></div>
           </div>
           <div class="thumbs" role="group" aria-label="BlackJack screenshots"></div>
         </div>
         <div class="info">
-          <p class="kicker">Cards</p>
+          <p class="kicker">Cards<span class="num">03 / 05</span></p>
           <h3 class="game-title">BlackJack</h3>
           <p class="desc">A six-deck table where blackjack pays 3 to 2 and the dealer stands on all 17s. Split, double down, take insurance, and ask for a hint when you're stuck.</p>
           <ul class="feat"><li>Split and double</li><li>Insurance</li><li>Hints on demand</li><li>Chips from $10 to $1K</li><li>Table stats</li><li>Rebuy when you go broke</li></ul>
@@ -554,12 +647,13 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
               <img src="img/sl_win.png" alt="Reels paying out on a line" loading="lazy">
               <img src="img/sl_free.png" alt="The free spins bonus starting" loading="lazy">
             </div>
+            <div class="progress" aria-hidden="true"></div>
             <div class="screen-bar" aria-hidden="true"><span class="led"></span><span class="cap"></span><span class="count"></span></div>
           </div>
           <div class="thumbs" role="group" aria-label="Slots screenshots"></div>
         </div>
         <div class="info">
-          <p class="kicker">Casino</p>
+          <p class="kicker">Casino<span class="num">04 / 05</span></p>
           <h3 class="game-title">Slots</h3>
           <p class="desc">Lucky Strike, a 7-line slot machine with wilds, scatters and free spins that can retrigger. Win something and you can gamble it on double or nothing.</p>
           <ul class="feat"><li>7 paylines</li><li>Wilds and scatters</li><li>Free spins bonus</li><li>Gamble feature</li><li>Autoplay</li><li>Full paytable</li></ul>
@@ -574,12 +668,13 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
               <img src="img/bf_title.png" alt="BlockFall title screen with its game modes" class="on" loading="lazy">
               <img src="img/bf_play.png" alt="A BlockFall game in progress" loading="lazy">
             </div>
+            <div class="progress" aria-hidden="true"></div>
             <div class="screen-bar" aria-hidden="true"><span class="led"></span><span class="cap"></span><span class="count"></span></div>
           </div>
           <div class="thumbs" role="group" aria-label="BlockFall screenshots"></div>
         </div>
         <div class="info">
-          <p class="kicker">Puzzle</p>
+          <p class="kicker">Puzzle<span class="num">05 / 05</span></p>
           <h3 class="game-title">BlockFall</h3>
           <p class="desc">The falling-block puzzle, done properly. Hold a piece, see the next five coming, land T-spins and back-to-back clears, and race the clock.</p>
           <ul class="feat"><li>Marathon</li><li>Sprint 40 lines</li><li>Ultra, 2 minutes</li><li>Hold and next queue</li><li>Ghost piece</li><li>T-spins</li></ul>
@@ -590,9 +685,9 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
     </div>
   </section>
 
-  <section class="section install" id="install">
+  <section class="section wrap" id="install">
     <div class="section-head">
-      <p class="label">About two minutes</p>
+      <p class="label"><span class="idx">02</span>About two minutes</p>
       <h2>Install</h2>
     </div>
     <ol class="steps">
@@ -610,9 +705,9 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
     </div>
   </section>
 
-  <section class="section contact" id="contact">
+  <section class="section wrap" id="contact">
     <div class="section-head">
-      <p class="label">Bugs, ideas, requests</p>
+      <p class="label"><span class="idx">03</span>Bugs, ideas, requests</p>
       <h2>Get in touch</h2>
       <p class="sub">Found a bug or something that isn't working right? Want a new game, or an update to one of these five? Send an email to <a href="mailto:calcarcade@gmail.com">calcarcade@gmail.com</a>.</p>
     </div>
@@ -641,10 +736,35 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
 </main>
 
 <footer>
-  <div class="wrap">
-    <a class="brand" href="#top" aria-label="Calc Arcade, back to top"><svg viewBox="0 0 20 28" aria-hidden="true"><rect x=".5" y=".5" width="19" height="27" rx="4" fill="#f6f6f3"/><rect x="3" y="3" width="14" height="10" rx="1.5" fill="#0a0b18"/><rect x="5" y="8" width="3" height="3" fill="#ffcd3c"/><rect x="9" y="5" width="2" height="6" fill="#ff4f7e"/><rect x="12" y="7" width="3" height="4" fill="#6f8bff"/><circle cx="6.5" cy="18" r="2.8" fill="#cfcfca"/><rect x="11" y="15.5" width="5.5" height="2.6" rx="1.3" fill="#f5b335"/><rect x="11" y="19" width="5.5" height="2.6" rx="1.3" fill="#26282c"/><rect x="3" y="23.5" width="3.4" height="2" rx="1" fill="#cfcfca"/><rect x="8.3" y="23.5" width="3.4" height="2" rx="1" fill="#cfcfca"/><rect x="13.6" y="23.5" width="3.4" height="2" rx="1" fill="#cfcfca"/></svg>Calc Arcade</a>
+  <div class="wrap foot-top">
+    <div class="foot-brand">
+      <a class="brand" href="#top" aria-label="Calc Arcade, back to top"><svg viewBox="0 0 20 28" aria-hidden="true"><rect x=".5" y=".5" width="19" height="27" rx="4" fill="#f6f6f3"/><rect x="3" y="3" width="14" height="10" rx="1.5" fill="#0a0b18"/><rect x="5" y="8" width="3" height="3" fill="#ffcd3c"/><rect x="9" y="5" width="2" height="6" fill="#ff4f7e"/><rect x="12" y="7" width="3" height="4" fill="#6f8bff"/><circle cx="6.5" cy="18" r="2.8" fill="#cfcfca"/><rect x="11" y="15.5" width="5.5" height="2.6" rx="1.3" fill="#f5b335"/><rect x="11" y="19" width="5.5" height="2.6" rx="1.3" fill="#26282c"/><rect x="3" y="23.5" width="3.4" height="2" rx="1" fill="#cfcfca"/><rect x="8.3" y="23.5" width="3.4" height="2" rx="1" fill="#cfcfca"/><rect x="13.6" y="23.5" width="3.4" height="2" rx="1" fill="#cfcfca"/></svg>Calc Arcade</a>
+      <p>Five free games for the NumWorks calculator, on your calculator in about two minutes.</p>
+      <a class="btn dl" href="games/calc-arcade-all.zip" download data-file="calc-arcade-all.zip"><svg class="ico" viewBox="0 0 9 10" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M3 0h3v4h2v1h-1v1h-1v1h-1v1h-1v-1h-1v-1h-1v-1h-1v-1h2zM0 9h9v1h-9z"/></svg>Download all 5</a>
+    </div>
+    <nav class="foot-col" aria-label="Games">
+      <p class="foot-h">Games</p>
+      <ul>
+        <li><a class="g-redline" href="#redline"><span class="dot"></span>Redline</a></li>
+        <li><a class="g-putt" href="#puttparty"><span class="dot"></span>Putt Party</a></li>
+        <li><a class="g-blackjack" href="#blackjack"><span class="dot"></span>BlackJack</a></li>
+        <li><a class="g-slots" href="#slots"><span class="dot"></span>Slots</a></li>
+        <li><a class="g-blockfall" href="#blockfall"><span class="dot"></span>BlockFall</a></li>
+      </ul>
+    </nav>
+    <nav class="foot-col" aria-label="Help">
+      <p class="foot-h">Help</p>
+      <ul>
+        <li><a href="#install">How to install</a></li>
+        <li><a href="https://my.numworks.com/apps">NumWorks app page</a></li>
+        <li><a href="#contact">Report a bug</a></li>
+        <li><a href="#contact">Request a game</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="wrap foot-bottom">
     <p>Games for NumWorks calculators. Not made by or affiliated with NumWorks.</p>
-    <div class="foot-links"><a class="totop" href="#contact">Found a bug? Get in touch</a><a class="totop" href="#top">Back to top &uarr;</a></div>
+    <a class="totop" href="#top">Back to top &uarr;</a>
   </div>
 </footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -665,6 +785,26 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
     reveals.forEach(function (el) { el.classList.add("in"); });
   }
 
+  /* Top bar: clear over the hero, solid once the page scrolls */
+  var bar = document.getElementById("topbar");
+  function onScroll() { bar.classList.toggle("at-top", window.scrollY < 8); }
+  onScroll();
+  addEventListener("scroll", onScroll, { passive: true });
+
+  /* Highlight the nav link for the section being read */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll(".topbar .navlink"));
+  if (hasIO) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        navLinks.forEach(function (a) {
+          if (a.getAttribute("href") === "#" + e.target.id) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
+        });
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    ["home", "games", "install", "contact"].forEach(function (id) { spy.observe(document.getElementById(id)); });
+  }
+
   var toastEl = document.getElementById("toast"), toastT;
   function toast(msg) { toastEl.textContent = msg; toastEl.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove("show"); }, 2800); }
 
@@ -683,33 +823,40 @@ footer p { margin: 0; font-family: var(--font-mono); font-size: 0.76rem; color: 
   copyButton("copy", "url", "https://my.numworks.com/apps");
   copyButton("copy-email", "email", "calcarcade@gmail.com");
 
-  /* Screen viewers: thumbnails you can tap, plus a slow automatic cycle while the card is on screen */
-  var viewers = [];
+  /* Screen viewers: thumbnails you can tap, plus a slow automatic cycle that only runs while
+     the card is on screen. The thin bar under the screen shows when the next one is coming. */
+  var DWELL = 4000;
   document.querySelectorAll(".viewer").forEach(function (v) {
     var imgs = Array.prototype.slice.call(v.querySelectorAll(".screen img"));
-    var th = v.querySelector(".thumbs"), cap = v.querySelector(".cap"), count = v.querySelector(".count");
-    var st = { cur: 0, held: false, visible: !hasIO };
+    var th = v.querySelector(".thumbs"), cap = v.querySelector(".cap"), count = v.querySelector(".count"), prog = v.querySelector(".progress");
+    var cur = 0, held = false, visible = !hasIO, timer = null;
+    prog.style.setProperty("--dwell", DWELL + "ms");
     var btns = imgs.map(function (im, k) {
       var b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", "Show: " + im.alt);
       var t = document.createElement("img"); t.src = im.getAttribute("src"); t.alt = ""; t.loading = "lazy"; b.appendChild(t); th.appendChild(b);
-      b.addEventListener("click", function () { st.held = true; show(k); });
+      b.addEventListener("click", function () { held = true; stop(); show(k); });
       return b;
     });
     function show(k) {
-      imgs[st.cur].classList.remove("on"); st.cur = k; imgs[k].classList.add("on");
+      imgs[cur].classList.remove("on"); cur = k; imgs[k].classList.add("on");
       btns.forEach(function (b, i) { b.setAttribute("aria-pressed", i === k ? "true" : "false"); });
       cap.textContent = imgs[k].alt; count.textContent = (k + 1) + " / " + imgs.length;
     }
+    function stop() { clearTimeout(timer); timer = null; prog.classList.remove("run"); }
+    function play() {
+      stop();
+      if (held || reduce || !visible || imgs.length < 2) return;
+      void prog.offsetWidth; prog.classList.add("run");
+      timer = setTimeout(function () { show((cur + 1) % imgs.length); play(); }, DWELL);
+    }
     show(0);
-    st.next = function () { if (!st.held && st.visible) show((st.cur + 1) % imgs.length); };
-    viewers.push(st);
-    if (hasIO) new IntersectionObserver(function (es) { st.visible = es[0].isIntersecting; }).observe(v);
+    if (hasIO) new IntersectionObserver(function (es) { visible = es[0].isIntersecting; if (visible) play(); else stop(); }, { threshold: 0.4 }).observe(v);
+    else play();
   });
 
   /* The hero calculator plays screens from every game */
   var lcd = Array.prototype.slice.call(document.querySelectorAll("#lcd img")), lc = 0, lcdName = document.getElementById("lcd-name");
   if (!reduce) {
-    setInterval(function () { viewers.forEach(function (st) { st.next(); }); }, 3600);
     setInterval(function () {
       if (document.hidden) return;
       lcd[lc].classList.remove("on"); lc = (lc + 1) % lcd.length; lcd[lc].classList.add("on");
