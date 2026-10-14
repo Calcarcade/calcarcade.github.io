@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=JetBrains+Mono:wght@500;600&family=Space+Grotesk:wght@400;500;700&display=swap">
-<script>document.documentElement.classList.add("js");</script>
+<script>document.documentElement.classList.add("js");try{if(localStorage.getItem("ca-motion")==="off")document.documentElement.classList.add("motion-paused")}catch(e){}</script>
 <style>
 /* Calc Arcade: an arcade at night on graph paper. The white NumWorks in the hero cycles through
    real game screens; each game gets a card with its own screen viewer and a colour of its own. */
@@ -45,7 +45,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scrollbar-color: #2b3060 var(--bg); }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scrollbar-color: #2b3060 var(--bg); }
 body {
   margin: 0;
   background-color: var(--bg);
@@ -72,7 +72,6 @@ body::before {
 a { color: inherit; }
 img { max-width: 100%; }
 :focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; border-radius: 6px; }
-[id] { scroll-margin-top: 76px; }
 p { text-wrap: pretty; }
 .skip { position: absolute; left: 12px; top: -60px; z-index: 50; padding: 10px 14px; border-radius: 10px; background: var(--yellow); color: var(--key-ink); font-weight: 700; text-decoration: none; transition: top 0.15s ease; }
 .skip:focus { top: 12px; }
@@ -92,11 +91,11 @@ p { text-wrap: pretty; }
 .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--font-display); font-size: 1.85rem; line-height: 1; letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap; }
 .brand svg { width: 18px; height: 25px; flex: none; transition: transform 0.25s ease; }
 .topbar nav { display: flex; align-items: center; gap: 4px; }
-.navlink { position: relative; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); text-decoration: none; padding: 10px 12px; border-radius: 10px; transition: color 0.15s ease, background-color 0.15s ease; }
-.navlink::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 5px; height: 2px; border-radius: 2px; background: var(--yellow); transform: scaleX(0); transition: transform 0.25s var(--ease-out); }
+.navlink { position: relative; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 10px; transition: color 0.15s ease, background-color 0.15s ease; }
+.navlink::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 8px; height: 2px; border-radius: 2px; background: var(--yellow); transform: scaleX(0); transition: transform 0.25s var(--ease-out); }
 .navlink[aria-current="true"] { color: var(--ink); }
 .navlink[aria-current="true"]::after { transform: scaleX(1); }
-.btn.btn-sm { min-height: 40px; padding: 0 14px; font-size: 1.3rem; border-radius: 10px; margin-left: 8px; gap: 9px; box-shadow: 0 3px 0 var(--b-edge); }
+.btn.btn-sm { min-height: 44px; padding: 0 14px; font-size: 1.3rem; border-radius: 10px; margin-left: 8px; gap: 9px; box-shadow: 0 3px 0 var(--b-edge); }
 
 /* -------------------------------------------------------------- buttons */
 /* Buttons are calculator keys: a raised face on a darker edge that presses down. */
@@ -220,6 +219,16 @@ h1 .hl { color: var(--yellow); text-shadow: 0.04em 0.04em 0 var(--pink); }
 .mq { display: inline-flex; align-items: center; gap: 24px; padding-right: 24px; font-family: var(--font-display); font-size: 2.1rem; line-height: 1; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink-faint); white-space: nowrap; }
 .mq::before { content: ""; width: 9px; height: 9px; flex: none; transform: rotate(45deg); background: var(--accent, var(--yellow)); box-shadow: 0 0 12px var(--accent, var(--yellow)); }
 @keyframes marquee { to { transform: translateX(-50%); } }
+.band { position: relative; }
+.motion-toggle {
+  position: absolute; top: 50%; right: max(12px, env(safe-area-inset-right)); z-index: 2; transform: translateY(-50%);
+  display: inline-flex; align-items: center; gap: 9px; min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px; cursor: pointer;
+  font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-soft); background: rgba(10, 11, 24, 0.86); box-shadow: inset 0 0 0 1px var(--line-strong);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: color 0.15s ease, background-color 0.15s ease;
+}
+.motion-toggle svg { width: 11px; height: 11px; flex: none; }
+.motion-paused .marquee-track, .motion-paused .calc-float, .motion-paused .calc-shadow, .motion-paused .cursor { animation-play-state: paused; }
 
 /* ------------------------------------------------------------- sections */
 .section { padding-top: var(--section-gap); }
@@ -266,17 +275,26 @@ h2 { font-family: var(--font-display); font-weight: 400; text-transform: upperca
 .progress::after { content: ""; display: block; height: 100%; background: var(--accent); transform: scaleX(0); transform-origin: left; }
 .progress.run::after { animation: fill var(--dwell, 4s) linear forwards; }
 @keyframes fill { to { transform: scaleX(1); } }
-.screen-bar { display: flex; align-items: center; gap: 10px; padding: 8px 4px 10px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-faint); letter-spacing: 0.02em; }
+.screen-bar { display: flex; align-items: center; gap: 8px; padding: 6px 0 8px 4px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-faint); letter-spacing: 0.02em; }
 .led { width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
 .cap { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.count { flex: none; font-variant-numeric: tabular-nums; }
+.count { flex: none; font-variant-numeric: tabular-nums; margin-right: 2px; }
+.sbtn {
+  flex: none; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 11px; cursor: pointer;
+  color: var(--ink-soft); background: rgba(255, 255, 255, 0.05); box-shadow: inset 0 0 0 1px var(--line);
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease; -webkit-tap-highlight-color: transparent;
+}
+.sbtn svg { width: 13px; height: 13px; }
+.sbtn[data-state="playing"] .i-play, .sbtn[data-state="paused"] .i-pause { display: none; }
+.sbtn:active { transform: translateY(1px); }
+.js .screen { cursor: zoom-in; }
 .thumbs { display: flex; gap: 8px; margin-top: 12px; }
 .thumbs button {
-  flex: 0 1 74px; min-width: 0; aspect-ratio: 4 / 3; padding: 0; border: 0; border-radius: 9px; overflow: hidden; background: #000; cursor: pointer;
+  flex: 0 1 74px; min-width: 0; min-height: 44px; aspect-ratio: 4 / 3; padding: 0; border: 0; border-radius: 9px; overflow: hidden; background: #000; cursor: pointer;
   opacity: 0.5; box-shadow: 0 0 0 1px var(--line-strong); transition: opacity 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 }
-.thumbs button img { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+.thumbs button img { display: block; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
 .thumbs button[aria-pressed="true"] { opacity: 1; box-shadow: 0 0 0 2px var(--accent); }
 .info { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
 .kicker { display: flex; align-items: center; gap: 10px; margin: 0; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
@@ -313,7 +331,7 @@ h2 { font-family: var(--font-display); font-weight: 400; text-transform: upperca
 .steps p { margin: 0; font-size: 0.97rem; color: var(--ink-soft); }
 code { font-family: var(--font-mono); font-size: 0.86em; color: var(--ink); background: rgba(255, 255, 255, 0.06); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; overflow-wrap: anywhere; }
 .copy {
-  align-self: flex-start; margin-top: 8px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 10px; cursor: pointer;
+  align-self: flex-start; margin-top: 8px; min-height: 44px; padding: 0 14px; border: 0; border-radius: 10px; cursor: pointer;
   font-family: var(--font-mono); font-size: 0.76rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--ink); background: var(--key); box-shadow: 0 3px 0 var(--key-edge), inset 0 0 0 1px var(--line-strong);
   transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.15s ease;
@@ -356,12 +374,12 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
 .foot-brand p { margin: 14px 0 22px; max-width: 34ch; color: var(--ink-soft); font-size: 0.97rem; }
 .foot-brand .btn { min-height: 48px; font-size: 1.45rem; }
 .foot-h { margin: 6px 0 16px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint); }
-.foot-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.foot-col a { display: inline-flex; align-items: center; gap: 10px; color: var(--ink-soft); text-decoration: none; font-size: 0.97rem; padding-block: 2px; transition: color 0.15s ease; }
+.foot-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.foot-col a { display: inline-flex; align-items: center; gap: 10px; color: var(--ink-soft); text-decoration: none; font-size: 0.97rem; min-height: 44px; transition: color 0.15s ease; }
 .foot-col .dot { width: 8px; height: 8px; flex: none; background: var(--accent); }
 .foot-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; padding-block: 22px calc(30px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); }
 .foot-bottom p { margin: 0; font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-faint); }
-.totop { font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-soft); text-decoration: none; padding: 8px 0; }
+.totop { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-soft); text-decoration: none; }
 
 .toast {
   position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 40;
@@ -371,6 +389,40 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* full-screen screenshot viewer (a native <dialog>: focus stays inside, Esc closes) */
+html.lb-open { overflow: hidden; }
+.lightbox { width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: transparent; color: var(--ink); }
+.lightbox::backdrop { background: rgba(5, 6, 13, 0.93); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.lb-inner {
+  height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 14px;
+  padding: max(14px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+.lightbox[open] .lb-inner { animation: lb-in 0.2s var(--ease-out); }
+@keyframes lb-in { from { opacity: 0; transform: scale(0.985); } }
+.lb-top, .lb-bottom { display: flex; align-items: center; gap: 12px; width: 100%; max-width: 1100px; margin: 0 auto; }
+.lb-title { flex: 1; min-width: 0; margin: 0; display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-size: 2rem; line-height: 1; text-transform: uppercase; letter-spacing: 0.02em; }
+.lb-title::before { content: ""; width: 10px; height: 10px; flex: none; background: var(--accent, var(--yellow)); box-shadow: 0 0 12px var(--accent, var(--yellow)); }
+.lb-count { margin: 0; font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.lb-stage { min-height: 0; display: grid; place-items: center; touch-action: pan-y; }
+.lb-stage img {
+  display: block; width: min(100%, calc((100vh - 200px) * 4 / 3)); aspect-ratio: 4 / 3; height: auto; background: #000;
+  image-rendering: pixelated; border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 30px 80px -24px #000;
+  user-select: none; -webkit-user-drag: none;
+}
+@supports (height: 100dvh) { .lb-stage img { width: min(100%, calc((100dvh - 200px) * 4 / 3)); } }
+.lb-stage img.from-right { animation: lb-slide-r 0.22s var(--ease-out); }
+.lb-stage img.from-left { animation: lb-slide-l 0.22s var(--ease-out); }
+@keyframes lb-slide-r { from { opacity: 0.2; transform: translateX(18px); } }
+@keyframes lb-slide-l { from { opacity: 0.2; transform: translateX(-18px); } }
+.lb-cap { flex: 1; min-width: 0; margin: 0; text-align: center; color: var(--ink-soft); font-size: 0.97rem; }
+.lb-btn {
+  flex: none; display: grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 0; border-radius: 12px; cursor: pointer;
+  color: var(--ink); background: var(--key); box-shadow: 0 3px 0 var(--key-edge), inset 0 0 0 1px var(--line-strong);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.15s ease; -webkit-tap-highlight-color: transparent;
+}
+.lb-btn svg { width: 15px; height: 15px; }
+.lb-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--key-edge), inset 0 0 0 1px var(--line-strong); }
 
 /* reveal on scroll, only when the script is running */
 .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s var(--ease-out), border-color 0.3s ease, box-shadow 0.3s ease; }
@@ -386,6 +438,8 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
   .btn:active, .btn:hover:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--b-edge); }
   .btn-ghost:hover:active { box-shadow: 0 1px 0 var(--b-edge), inset 0 0 0 1px var(--line-strong); }
   .marquee:hover .marquee-track { animation-play-state: paused; }
+  .sbtn:hover, .motion-toggle:hover { color: var(--ink); background: rgba(255, 255, 255, 0.1); }
+  .lb-btn:hover { background: #262b52; }
   .tile:hover { transform: translateY(-4px); border-color: var(--accent-line); box-shadow: 0 22px 40px -22px var(--accent); }
   .tile:hover .tile-screen img { transform: scale(1.04); }
   .tile-name::after { content: "\2193"; font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-ink); opacity: 0; transform: translateY(-4px); transition: opacity 0.2s ease, transform 0.2s ease; }
@@ -437,7 +491,9 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
   :root { --gutter: 18px; --section-gap: 80px; }
   body { font-size: 1rem; }
   .btn-sm { display: none !important; }
-  .navlink { padding: 10px 9px; }
+  .motion-toggle { width: 44px; padding: 0; justify-content: center; }
+  .motion-toggle .mt-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .navlink { padding: 0 9px; }
   .navlink::after { left: 9px; right: 9px; }
   .hero { padding-block: 32px 60px; gap: 36px; }
   h1 { margin: 22px 0 20px; }
@@ -464,7 +520,8 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .hero-copy > *, .calc-stage, .calc-float, .calc-shadow, .cursor, .marquee-track { animation: none; }
+  .hero-copy > *, .calc-stage, .calc-float, .calc-shadow, .cursor, .marquee-track, .lightbox[open] .lb-inner, .lb-stage img { animation: none; }
+  .motion-toggle { display: none; }
   .js .reveal { opacity: 1; transform: none; }
   *, *::before, *::after { transition-duration: 0.01ms !important; }
 }
@@ -544,6 +601,7 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
     </div>
   </section>
 
+  <div class="band">
   <div class="marquee" aria-hidden="true">
     <div class="marquee-track">
       <span class="mq g-redline">Redline</span><span class="mq g-putt">Putt Party</span><span class="mq g-blackjack">BlackJack</span><span class="mq g-slots">Slots</span><span class="mq g-blockfall">BlockFall</span><span class="mq">Free to download</span><span class="mq">Made for NumWorks</span>
@@ -551,6 +609,8 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
       <span class="mq g-redline">Redline</span><span class="mq g-putt">Putt Party</span><span class="mq g-blackjack">BlackJack</span><span class="mq g-slots">Slots</span><span class="mq g-blockfall">BlockFall</span><span class="mq">Free to download</span><span class="mq">Made for NumWorks</span>
       <span class="mq g-redline">Redline</span><span class="mq g-putt">Putt Party</span><span class="mq g-blackjack">BlackJack</span><span class="mq g-slots">Slots</span><span class="mq g-blockfall">BlockFall</span><span class="mq">Free to download</span><span class="mq">Made for NumWorks</span>
     </div>
+  </div>
+  <button class="motion-toggle" type="button" id="motion"><span class="mt-icon"><svg viewBox="0 0 10 10" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M2 1h2v8h-2zM6 1h2v8h-2z"/></svg></span><span class="mt-label">Pause motion</span></button>
   </div>
 
   <section class="section wrap" id="games">
@@ -580,7 +640,7 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
               <img src="img/redline_garage.png" alt="Picking a car in the garage" loading="lazy">
             </div>
             <div class="progress" aria-hidden="true"></div>
-            <div class="screen-bar" aria-hidden="true"><span class="led"></span><span class="cap"></span><span class="count"></span></div>
+            <div class="screen-bar"><span class="led" aria-hidden="true"></span><span class="cap" aria-hidden="true"></span><span class="count" aria-hidden="true"></span></div>
           </div>
           <div class="thumbs" role="group" aria-label="Redline screenshots"></div>
         </div>
@@ -604,7 +664,7 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
               <img src="img/putt_range.png" alt="The closest to the pin game at the driving range" loading="lazy">
             </div>
             <div class="progress" aria-hidden="true"></div>
-            <div class="screen-bar" aria-hidden="true"><span class="led"></span><span class="cap"></span><span class="count"></span></div>
+            <div class="screen-bar"><span class="led" aria-hidden="true"></span><span class="cap" aria-hidden="true"></span><span class="count" aria-hidden="true"></span></div>
           </div>
           <div class="thumbs" role="group" aria-label="Putt Party screenshots"></div>
         </div>
@@ -626,7 +686,7 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
               <img src="img/bj_win.png" alt="The dealer busts and you win" loading="lazy">
             </div>
             <div class="progress" aria-hidden="true"></div>
-            <div class="screen-bar" aria-hidden="true"><span class="led"></span><span class="cap"></span><span class="count"></span></div>
+            <div class="screen-bar"><span class="led" aria-hidden="true"></span><span class="cap" aria-hidden="true"></span><span class="count" aria-hidden="true"></span></div>
           </div>
           <div class="thumbs" role="group" aria-label="BlackJack screenshots"></div>
         </div>
@@ -648,7 +708,7 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
               <img src="img/sl_free.png" alt="The free spins bonus starting" loading="lazy">
             </div>
             <div class="progress" aria-hidden="true"></div>
-            <div class="screen-bar" aria-hidden="true"><span class="led"></span><span class="cap"></span><span class="count"></span></div>
+            <div class="screen-bar"><span class="led" aria-hidden="true"></span><span class="cap" aria-hidden="true"></span><span class="count" aria-hidden="true"></span></div>
           </div>
           <div class="thumbs" role="group" aria-label="Slots screenshots"></div>
         </div>
@@ -669,7 +729,7 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
               <img src="img/bf_play.png" alt="A BlockFall game in progress" loading="lazy">
             </div>
             <div class="progress" aria-hidden="true"></div>
-            <div class="screen-bar" aria-hidden="true"><span class="led"></span><span class="cap"></span><span class="count"></span></div>
+            <div class="screen-bar"><span class="led" aria-hidden="true"></span><span class="cap" aria-hidden="true"></span><span class="count" aria-hidden="true"></span></div>
           </div>
           <div class="thumbs" role="group" aria-label="BlockFall screenshots"></div>
         </div>
@@ -768,6 +828,21 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
   </div>
 </footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<dialog class="lightbox" id="lightbox" aria-labelledby="lb-title">
+  <div class="lb-inner">
+    <div class="lb-top">
+      <h2 class="lb-title" id="lb-title">Screenshots</h2>
+      <p class="lb-count" id="lb-count"></p>
+      <button class="lb-btn" type="button" id="lb-close" aria-label="Close full-screen view"><svg viewBox="0 0 10 10" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M1 1h2v2h-2zM3 3h2v2h-2zM5 5h2v2h-2zM7 7h2v2h-2zM7 1h2v2h-2zM5 3h2v2h-2zM3 5h2v2h-2zM1 7h2v2h-2z"/></svg></button>
+    </div>
+    <div class="lb-stage" id="lb-stage"><img id="lb-img" alt=""></div>
+    <div class="lb-bottom">
+      <button class="lb-btn" type="button" id="lb-prev" aria-label="Previous screenshot"><svg viewBox="0 0 8 10" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M5 0h2v2h-2zM3 2h2v2h-2zM1 4h2v2h-2zM3 6h2v2h-2zM5 8h2v2h-2z"/></svg></button>
+      <p class="lb-cap" id="lb-cap" aria-live="polite"></p>
+      <button class="lb-btn" type="button" id="lb-next" aria-label="Next screenshot"><svg viewBox="0 0 8 10" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M1 0h2v2h-2zM3 2h2v2h-2zM5 4h2v2h-2zM3 6h2v2h-2zM1 8h2v2h-2z"/></svg></button>
+    </div>
+  </div>
+</dialog>
 
 <script>
 (function () {
@@ -823,46 +898,170 @@ footer { margin-top: var(--section-gap); border-top: 1px solid var(--line); back
   copyButton("copy", "url", "https://my.numworks.com/apps");
   copyButton("copy-email", "email", "calcarcade@gmail.com");
 
-  /* Screen viewers: thumbnails you can tap, plus a slow automatic cycle that only runs while
-     the card is on screen. The thin bar under the screen shows when the next one is coming. */
-  var DWELL = 4000;
+  /* Small pixel icons for the screen controls */
+  var ICON = {
+    pause: '<svg viewBox="0 0 10 10" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M2 1h2v8h-2zM6 1h2v8h-2z"/></svg>',
+    play: '<svg viewBox="0 0 10 10" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M2 1h2v8h-2zM4 2h2v6h-2zM6 3h1v4h-1zM7 4h1v2h-1z"/></svg>',
+    expand: '<svg viewBox="0 0 10 10" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M1 1h3v1h-2v2h-1zM6 1h3v3h-1v-2h-2zM1 6h1v2h2v1h-3zM8 6h1v3h-3v-1h2z"/></svg>'
+  };
+  var root = document.documentElement;
+  var motionOff = root.classList.contains("motion-paused");
+
+  /* Screen viewers. Each one cycles slowly through its screens while its card is on screen. It stops
+     while the mouse is over it, while it has keyboard focus and while the full-screen view is open, and
+     stays stopped after its pause button, a thumbnail tap or the "Pause motion" switch. The thin bar
+     under the screen shows when the next screen is coming. */
+  var DWELL = 4000, viewers = [];
   document.querySelectorAll(".viewer").forEach(function (v) {
+    var game = v.closest(".game");
+    var name = game.querySelector(".game-title").textContent;
+    var accent = (game.className.match(/\bg-[a-z]+\b/) || [""])[0];
     var imgs = Array.prototype.slice.call(v.querySelectorAll(".screen img"));
-    var th = v.querySelector(".thumbs"), cap = v.querySelector(".cap"), count = v.querySelector(".count"), prog = v.querySelector(".progress");
-    var cur = 0, held = false, visible = !hasIO, timer = null;
+    var th = v.querySelector(".thumbs"), bar = v.querySelector(".screen-bar"), cap = v.querySelector(".cap"), count = v.querySelector(".count"), prog = v.querySelector(".progress");
+    var st = { cur: 0, auto: !reduce && !motionOff, visible: !hasIO, hover: false, focus: false, away: false, timer: null, forced: false };
     prog.style.setProperty("--dwell", DWELL + "ms");
-    var btns = imgs.map(function (im, k) {
+    var thumbs = imgs.map(function (im, k) {
       var b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", "Show: " + im.alt);
       var t = document.createElement("img"); t.src = im.getAttribute("src"); t.alt = ""; t.loading = "lazy"; b.appendChild(t); th.appendChild(b);
-      b.addEventListener("click", function () { held = true; stop(); show(k); });
+      b.addEventListener("click", function () { setAuto(false); show(k); });
       return b;
     });
+    function control(label, icon) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "sbtn";
+      if (label) b.setAttribute("aria-label", label);
+      b.innerHTML = icon; bar.appendChild(b); return b;
+    }
+    var pauseBtn = imgs.length > 1 ? control("", ICON.pause.replace("<svg ", '<svg class="i-pause" ') + ICON.play.replace("<svg ", '<svg class="i-play" ')) : null;
+    var fullBtn = control("View " + name + " screenshots full screen", ICON.expand);
+    fullBtn.setAttribute("aria-haspopup", "dialog");
+
     function show(k) {
-      imgs[cur].classList.remove("on"); cur = k; imgs[k].classList.add("on");
-      btns.forEach(function (b, i) { b.setAttribute("aria-pressed", i === k ? "true" : "false"); });
+      imgs[st.cur].classList.remove("on"); st.cur = k; imgs[k].classList.add("on");
+      thumbs.forEach(function (b, i) { b.setAttribute("aria-pressed", i === k ? "true" : "false"); });
       cap.textContent = imgs[k].alt; count.textContent = (k + 1) + " / " + imgs.length;
     }
-    function stop() { clearTimeout(timer); timer = null; prog.classList.remove("run"); }
-    function play() {
-      stop();
-      if (held || reduce || !visible || imgs.length < 2) return;
+    function stop() { clearTimeout(st.timer); st.timer = null; prog.classList.remove("run"); }
+    function update() {
+      var run = st.auto && st.visible && !st.hover && !st.focus && !st.away && imgs.length > 1;
+      if (!run) return stop();
+      if (st.timer) return;
       void prog.offsetWidth; prog.classList.add("run");
-      timer = setTimeout(function () { show((cur + 1) % imgs.length); play(); }, DWELL);
+      st.timer = setTimeout(function () { st.timer = null; prog.classList.remove("run"); show((st.cur + 1) % imgs.length); update(); }, DWELL);
     }
-    show(0);
-    if (hasIO) new IntersectionObserver(function (es) { visible = es[0].isIntersecting; if (visible) play(); else stop(); }, { threshold: 0.4 }).observe(v);
-    else play();
+    function setAuto(on) {
+      st.auto = on;
+      if (pauseBtn) { pauseBtn.setAttribute("data-state", on ? "playing" : "paused"); pauseBtn.setAttribute("aria-label", (on ? "Pause " : "Play ") + name + " slideshow"); }
+      update();
+    }
+    if (pauseBtn) pauseBtn.addEventListener("click", function () {
+      if (!st.auto) { st.hover = false; st.focus = false; st.forced = true; }   // an explicit Play starts it even with the mouse or focus still here
+      setAuto(!st.auto);
+    });
+    v.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse" && !st.forced) { st.hover = true; update(); } });
+    v.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") { st.hover = false; st.forced = false; update(); } });
+    v.addEventListener("focusin", function () { if (!st.forced) { st.focus = true; update(); } });
+    v.addEventListener("focusout", function (e) { if (!v.contains(e.relatedTarget)) { st.focus = false; st.forced = false; update(); } });
+
+    var api = {
+      name: name, accent: accent, imgs: imgs,
+      cur: function () { return st.cur; }, show: show, setAuto: setAuto,
+      away: function (on) { st.away = on; update(); }
+    };
+    v.querySelector(".screen").addEventListener("click", function () { openViewer(api, null); });
+    fullBtn.addEventListener("click", function () { openViewer(api, fullBtn); });
+    show(0); setAuto(st.auto);
+    if (hasIO) new IntersectionObserver(function (es) { st.visible = es[0].isIntersecting; update(); }, { threshold: 0.4 }).observe(v);
+    else update();
+    viewers.push(api);
   });
+
+  /* "Pause motion" stops the band, the floating calculator, its screen and every slideshow.
+     The choice is remembered on this device (and applied before the page first paints, in <head>). */
+  var motionBtn = document.getElementById("motion");
+  function paintMotion() {
+    motionBtn.querySelector(".mt-icon").innerHTML = motionOff ? ICON.play : ICON.pause;
+    motionBtn.querySelector(".mt-label").textContent = motionOff ? "Play motion" : "Pause motion";
+  }
+  motionBtn.addEventListener("click", function () {
+    motionOff = !motionOff;
+    root.classList.toggle("motion-paused", motionOff);
+    try { localStorage.setItem("ca-motion", motionOff ? "off" : "on"); } catch (e) {}
+    viewers.forEach(function (vw) { vw.setAuto(!motionOff); });
+    paintMotion();
+  });
+  paintMotion();
 
   /* The hero calculator plays screens from every game */
   var lcd = Array.prototype.slice.call(document.querySelectorAll("#lcd img")), lc = 0, lcdName = document.getElementById("lcd-name");
   if (!reduce) {
     setInterval(function () {
-      if (document.hidden) return;
+      if (document.hidden || motionOff) return;
       lcd[lc].classList.remove("on"); lc = (lc + 1) % lcd.length; lcd[lc].classList.add("on");
       lcdName.textContent = lcd[lc].getAttribute("data-name");
     }, 2400);
   }
+
+  /* Full-screen viewer: next/previous buttons, arrow keys and swipe. Closes with the X, Esc, a tap
+     outside the picture, or the phone's Back button (opening it adds a history step for that). */
+  var lb = document.getElementById("lightbox"), lbImg = document.getElementById("lb-img"), lbStage = document.getElementById("lb-stage");
+  var lbTitle = document.getElementById("lb-title"), lbCount = document.getElementById("lb-count"), lbCap = document.getElementById("lb-cap");
+  var lbPrev = document.getElementById("lb-prev"), lbNext = document.getElementById("lb-next");
+  var lbView = null, lbK = 0, lbStart = 0, lbOpener = null, lbByBack = false, swiped = false;
+  lbImg.draggable = false;
+  function lbShow(k, dir) {
+    var n = lbView.imgs.length, im;
+    lbK = (k + n) % n; im = lbView.imgs[lbK];
+    lbImg.src = im.getAttribute("src"); lbImg.alt = im.alt;
+    lbCap.textContent = im.alt; lbCount.textContent = (lbK + 1) + " / " + n;
+    lbImg.classList.remove("from-left", "from-right");
+    if (dir && !reduce) { void lbImg.offsetWidth; lbImg.classList.add(dir > 0 ? "from-right" : "from-left"); }
+  }
+  function openViewer(view, opener) {
+    if (typeof lb.showModal !== "function" || lb.open) return;   // very old browsers keep the inline viewer
+    lbView = view; lbOpener = opener; lbStart = view.cur();
+    lb.className = "lightbox " + view.accent;
+    lbTitle.textContent = view.name;
+    lbPrev.hidden = lbNext.hidden = view.imgs.length < 2;
+    lbShow(lbStart, 0);
+    view.away(true);
+    lb.showModal();
+    root.classList.add("lb-open");
+    try { history.pushState({ caViewer: true }, ""); } catch (e) {}
+  }
+  function closeViewer() { if (lb.open) lb.close(); }
+  lb.addEventListener("close", function () {
+    var view = lbView; lbView = null;
+    root.classList.remove("lb-open");
+    if (view) {
+      if (lbK !== lbStart) { view.setAuto(false); view.show(lbK); }   // keep the card on the screen they stopped at
+      view.away(false);
+    }
+    if (lbOpener) lbOpener.focus();
+    if (!lbByBack && history.state && history.state.caViewer) history.back();
+    lbByBack = false;
+  });
+  addEventListener("popstate", function () { if (lb.open) { lbByBack = true; lb.close(); } });
+  document.getElementById("lb-close").addEventListener("click", closeViewer);
+  lbPrev.addEventListener("click", function () { lbShow(lbK - 1, -1); });
+  lbNext.addEventListener("click", function () { lbShow(lbK + 1, 1); });
+  lb.addEventListener("keydown", function (e) {
+    if (!lbView || lbView.imgs.length < 2) return;
+    if (e.key === "ArrowRight") { e.preventDefault(); lbShow(lbK + 1, 1); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); lbShow(lbK - 1, -1); }
+  });
+  lb.addEventListener("click", function (e) {
+    if (swiped) { swiped = false; return; }
+    if (e.target === lb || e.target === lbStage || e.target.classList.contains("lb-inner")) closeViewer();
+  });
+  var sx = 0, sy = 0, sid = null;
+  lbStage.addEventListener("pointerdown", function (e) { swiped = false; if (e.pointerType === "mouse") return; sid = e.pointerId; sx = e.clientX; sy = e.clientY; });
+  lbStage.addEventListener("pointercancel", function () { sid = null; });
+  lbStage.addEventListener("pointerup", function (e) {
+    if (e.pointerId !== sid) return;
+    sid = null;
+    var dx = e.clientX - sx, dy = e.clientY - sy;
+    if (lbView && lbView.imgs.length > 1 && Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.4) { swiped = true; lbShow(lbK + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1); }
+  });
 })();
 </script>
 <script data-goatcounter="https://calcarcade.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
